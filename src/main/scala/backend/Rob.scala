@@ -22,6 +22,7 @@ import zhoushan.Constant._
 import zhoushan.RasConstant._
 import difftest._
 
+
 class Rob extends Module with ZhoushanConfig {
   val entries = RobSize
   val enq_width = DecodeWidth
@@ -30,7 +31,7 @@ class Rob extends Module with ZhoushanConfig {
   val idx_width = log2Up(entries)
   val addr_width = idx_width + 1  // MSB is flag bit
   def getIdx(x: UInt): UInt = x(idx_width - 1, 0)
-  def getFlag(x: UInt): Bool = x(addr_width - 1).asBool()
+  def getFlag(x: UInt): Bool = x(addr_width - 1).asBool
 
   val io = IO(new Bundle {
     // input
@@ -186,6 +187,7 @@ class Rob extends Module with ZhoushanConfig {
   val intr         = WireInit(Bool(), false.B)
   val intr_mstatus = WireInit(UInt(64.W), "h00001800".U)
   val intr_mepc    = WireInit(UInt(64.W), 0.U)
+  val intr_einst   = WireInit(UInt(64.W),0.U)
   val intr_mcause  = WireInit(UInt(64.W), 0.U)
 
   BoringUtils.addSource(intr, "intr")
@@ -213,6 +215,7 @@ class Rob extends Module with ZhoushanConfig {
         when (cm(0).valid && csr_mip_mtip_intr && !sys_in_flight) {
           intr_mstatus := Cat(csr_mstatus(63, 8), csr_mstatus(3), csr_mstatus(6, 4), 0.U, csr_mstatus(2, 0))
           intr_mepc := cm(0).pc
+          intr_einst := cm(0).inst
           intr_mcause := "h8000000000000007".U
           intr := true.B
           intr_jmp_pc := Cat(csr_mtvec_idx, Fill(2, 0.U))
@@ -232,6 +235,7 @@ class Rob extends Module with ZhoushanConfig {
     dt_ae.io.intrNO       := RegNext(Mux(intr, intr_mcause, 0.U))
     dt_ae.io.cause        := 0.U
     dt_ae.io.exceptionPC  := RegNext(Mux(intr, intr_mepc, 0.U))
+    dt_ae.io.exceptionInst := RegNext(Mux(intr, intr_einst,0.U))
     if (DebugArchEvent) {
       when (dt_ae.io.intrNO =/= 0.U) {
         printf("%d: [DT-AE] intrNO=%x ePC=%x\n", DebugTimer(), dt_ae.io.intrNO, dt_ae.io.exceptionPC)
@@ -311,7 +315,7 @@ class Rob extends Module with ZhoushanConfig {
         }
       }
       when (deq_uop(i).jmp_code === s"b$JMP_JALR".U) {
-        ras_type := MuxLookup(Cat(rd_link.asUInt(), rs1_link.asUInt()), RAS_X, Array(
+        ras_type := MuxLookup(Cat(rd_link.asUInt, rs1_link.asUInt), RAS_X, Array(
           "b00".U -> RAS_X,
           "b01".U -> RAS_POP,
           "b10".U -> RAS_PUSH,
@@ -354,7 +358,7 @@ class Rob extends Module with ZhoushanConfig {
 
   /* --------------- reset --------------- */
 
-  when (reset.asBool()) {
+  when (reset.asBool) {
     for (i <- 0 until entries) {
       rob.write(i.U, 0.U.asTypeOf(new MicroOp))
     }

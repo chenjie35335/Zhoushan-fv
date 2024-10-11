@@ -77,7 +77,7 @@ class Lsu extends Module {
   val addr_unaligned = Mux(uop.fu_code === s"b$FU_MEM".U,
     MuxLookup(uop.mem_size, false.B, Array(
       s"b$MEM_HALF".U  -> (addr_offset === "b111".U),
-      s"b$MEM_WORD".U  -> (addr_offset.asUInt() > "b100".U),
+      s"b$MEM_WORD".U  -> (addr_offset.asUInt > "b100".U),
       s"b$MEM_DWORD".U -> (addr_offset =/= "b000".U)
     )), false.B)
   // currently we just skip the memory access with unaligned address

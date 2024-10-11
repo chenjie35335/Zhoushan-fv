@@ -64,7 +64,7 @@ class Prf extends Module with ZhoushanConfig {
     }
   }
 
-  when (reset.asBool()) {
+  when (reset.asBool) {
     for (i <- 0 until PrfSize) {
       prf(i) := 0.U
     }

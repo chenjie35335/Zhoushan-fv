@@ -62,7 +62,7 @@ class Csr extends Module {
   val mcause    = RegInit(UInt(64.W), 0.U)
 
   BoringUtils.addSource(mstatus, "csr_mstatus")
-  BoringUtils.addSource(mie(7).asBool(), "csr_mie_mtie")
+  BoringUtils.addSource(mie(7).asBool, "csr_mie_mtie")
   BoringUtils.addSource(mtvec(31, 2), "csr_mtvec_idx")
 
   // interrupt for mip
@@ -81,7 +81,7 @@ class Csr extends Module {
   def mstatusWriteFunction(mstatus: UInt): UInt = {
     def get_mstatus_xs(mstatus: UInt): UInt = mstatus(16, 15)
     def get_mstatus_fs(mstatus: UInt): UInt = mstatus(14, 13)
-    val mstatus_sd = ((get_mstatus_xs(mstatus) === "b11".U) || (get_mstatus_fs(mstatus) === "b11".U)).asUInt()
+    val mstatus_sd = ((get_mstatus_xs(mstatus) === "b11".U) || (get_mstatus_fs(mstatus) === "b11".U)).asUInt
     val mstatus_new = Cat(mstatus_sd, mstatus(62, 0))
     mstatus_new
   }

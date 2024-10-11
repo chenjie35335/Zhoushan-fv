@@ -80,7 +80,7 @@ class Meta extends Module {
   }
 
   // sync reset
-  when (reset.asBool()) {
+  when (reset.asBool) {
     for (i <- 0 until 64) {
       tags.write(i.U, 0.U)
     }
@@ -422,7 +422,7 @@ class Cache[BT <: CacheBusIO](bus_type: BT, id: Int) extends Module with SramPar
       }
     }
     is (s_complete) {
-      in.resp.bits.rdata := RegNext(Mux(s2_offs.asBool(), wdata2, wdata1))
+      in.resp.bits.rdata := RegNext(Mux(s2_offs.asBool, wdata2, wdata1))
       when (in.resp.fire()) {
         state := s_invalid
       }

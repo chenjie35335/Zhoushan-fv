@@ -175,6 +175,7 @@ class Core extends Module with ZhoushanConfig {
       dt_ic.io.wen      := RegNext(cm(i).rd_en)
       dt_ic.io.wdata    := RegNext(cm_rd_data(i))
       dt_ic.io.wdest    := RegNext(cm(i).rd_addr)
+      dt_ic.io.special  := 0.U
 
       when (dt_ic.io.valid && dt_ic.io.instr === Instructions.PUTCH) {
         printf("%c", rf_a0(7, 0))

@@ -64,7 +64,7 @@ class InstFetch extends Module with ZhoushanConfig {
 
   // next pc predicted
   val npc_p = HoldUnless(bp.io.pred_bpc, RegNext(bp_update))
-  val pred_br = HoldUnlessWithFlush(Cat(bp.io.pred_br.reverse) & Fill(2, bp.io.pred_valid && !mis).asUInt(), RegNext(bp_update), mis)
+  val pred_br = HoldUnlessWithFlush(Cat(bp.io.pred_br.reverse) & Fill(2, bp.io.pred_valid && !mis).asUInt, RegNext(bp_update), mis)
 
   // update pc by npc
   // priority: redirection > branch prediction = sequential pc
@@ -112,13 +112,13 @@ class InstFetch extends Module with ZhoushanConfig {
   out_vec(1).inst     := resp.bits.rdata(63, 32)
   out_vec(1).pred_br  := resp.bits.user(67)
   out_vec(1).pred_bpc := Mux(out_vec(1).pred_br, resp.bits.user(63, 32), 0.U)
-  out_vec(1).valid    := !out_vec(0).pred_br && resp.bits.user(65).asBool()
+  out_vec(1).valid    := !out_vec(0).pred_br && resp.bits.user(65).asBool
 
   out_vec(0).pc       := resp.bits.user(31, 0)
   out_vec(0).inst     := resp.bits.rdata(31, 0)
   out_vec(0).pred_br  := resp.bits.user(66) && out_vec(0).valid
   out_vec(0).pred_bpc := Mux(out_vec(0).pred_br, resp.bits.user(63, 32), 0.U)
-  out_vec(0).valid    := resp.bits.user(64).asBool()
+  out_vec(0).valid    := resp.bits.user(64).asBool
 
   io.out.valid        := resp.valid && !mis && !reg_mis && RegNext(!mis)
 

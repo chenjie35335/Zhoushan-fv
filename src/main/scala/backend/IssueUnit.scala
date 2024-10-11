@@ -40,7 +40,7 @@ class IssueUnit extends Module with ZhoushanConfig {
   int_iq.io.flush := io.flush
   int_iq.io.rob_addr := io.rob_addr
   for (i <- 0 until PrfSize) {
-    int_iq.io.avail_list(i) := io.avail_list(i).asBool()
+    int_iq.io.avail_list(i) := io.avail_list(i).asBool
   }
   int_iq.io.fu_ready := true.B
 
@@ -48,7 +48,7 @@ class IssueUnit extends Module with ZhoushanConfig {
   mem_iq.io.flush := io.flush
   mem_iq.io.rob_addr := io.rob_addr
   for (i <- 0 until PrfSize) {
-    mem_iq.io.avail_list(i) := io.avail_list(i).asBool()
+    mem_iq.io.avail_list(i) := io.avail_list(i).asBool
   }
   mem_iq.io.fu_ready := io.lsu_ready
 
@@ -372,7 +372,7 @@ class IssueQueueInOrder(entries: Int, enq_width: Int, deq_width: Int) extends Ab
   val idx_width = log2Up(entries)
   val addr_width = idx_width + 1  // MSB is flag bit
   def getIdx(x: UInt): UInt = x(idx_width - 1, 0)
-  def getFlag(x: UInt): Bool = x(addr_width - 1).asBool()
+  def getFlag(x: UInt): Bool = x(addr_width - 1).asBool
 
   val buf = SyncReadMem(entries, new MicroOp, SyncReadMem.WriteFirst)
 

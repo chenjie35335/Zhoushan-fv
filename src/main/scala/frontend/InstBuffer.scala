@@ -58,7 +58,7 @@ class InstBuffer extends Module with ZhoushanConfig {
   val idx_width = log2Up(entries)
   val addr_width = idx_width + 1  // MSB is flag bit
   def getIdx(x: UInt): UInt = x(idx_width - 1, 0)
-  def getFlag(x: UInt): Bool = x(addr_width - 1).asBool()
+  def getFlag(x: UInt): Bool = x(addr_width - 1).asBool
 
   val buf = SyncReadMem(entries, new InstPacket, SyncReadMem.WriteFirst)
 
@@ -136,7 +136,7 @@ class InstBuffer extends Module with ZhoushanConfig {
 
   // reset
 
-  when (reset.asBool()) {
+  when (reset.asBool) {
     for (i <- 0 until entries) {
       buf.write(i.U, 0.U.asTypeOf(new InstPacket))
     }

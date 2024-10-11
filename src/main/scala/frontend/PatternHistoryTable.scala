@@ -55,7 +55,7 @@ class PatternHistoryTableLocal extends AbstractPatternHistoryTable {
     io.rdirect(i) := false.B
     for (j <- 0 until PhtWidth) {
       when (RegNext(io.rindex(i)) === j.U) {
-        io.rdirect(i) := pht_rdata_1(j).asBool()
+        io.rdirect(i) := pht_rdata_1(j).asBool
       }
     }
   }
@@ -94,7 +94,7 @@ class PatternHistoryTableLocal extends AbstractPatternHistoryTable {
   }
 
   // sync reset
-  when (reset.asBool()) {
+  when (reset.asBool) {
     for (i <- 0 until PhtWidth) {
       for (j <- 0 until PhtSize) {
         pht_1(i).write(j.U, 0.U)
@@ -118,7 +118,7 @@ class PatternHistoryTableGlobal extends AbstractPatternHistoryTable {
     pht_rdata_1 := pht_1.read(io.raddr(i))
 
     // stage 2
-    io.rdirect(i) := pht_rdata_1(1).asBool()
+    io.rdirect(i) := pht_rdata_1(1).asBool
   }
 
   // write to pht
@@ -145,7 +145,7 @@ class PatternHistoryTableGlobal extends AbstractPatternHistoryTable {
   }
 
   // sync reset
-  when (reset.asBool()) {
+  when (reset.asBool) {
     for (i <- 0 until PhtSize) {
       pht_1.write(i.U, 0.U)
       pht_0.write(i.U, 0.U)

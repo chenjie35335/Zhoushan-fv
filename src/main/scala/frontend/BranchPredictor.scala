@@ -91,11 +91,11 @@ class BranchPredictor extends Module with BpParameters with ZhoushanConfig {
   val bht_waddr = bhtAddr(jmp_packet.inst_pc)
   val bht_wrdata = bht(bht_waddr)
   when (jmp_packet.valid) {
-    bht(bht_waddr) := Cat(jmp_packet.jmp.asUInt(), bht_wrdata(BhtWidth - 1, 1))
+    bht(bht_waddr) := Cat(jmp_packet.jmp.asUInt, bht_wrdata(BhtWidth - 1, 1))
   }
 
   // BHT reset
-  when (reset.asBool()) {
+  when (reset.asBool) {
     for (i <- 0 until BhtSize) {
       bht(i) := 0.U
     }
@@ -109,7 +109,7 @@ class BranchPredictor extends Module with BpParameters with ZhoushanConfig {
 
   // GHT update logic
   when (jmp_packet.valid) {
-    ght := Cat(jmp_packet.jmp.asUInt(), ght(GhtWidth - 1, 1))
+    ght := Cat(jmp_packet.jmp.asUInt, ght(GhtWidth - 1, 1))
   }
 
   // PHT definition
