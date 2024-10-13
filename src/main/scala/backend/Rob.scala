@@ -241,6 +241,15 @@ class Rob extends Module with ZhoushanConfig {
         printf("%d: [DT-AE] intrNO=%x ePC=%x\n", DebugTimer(), dt_ae.io.intrNO, dt_ae.io.exceptionPC)
       }
     }
+
+    if(EnableFormal) {
+      val resultEventWire = rvspeccore.checker.ConnectCheckerResult.makeEventSource()(64, ZhoushanConfig.FormalConfig)
+      resultEventWire.cause := 0.U
+      resultEventWire.exceptionInst := RegNext(Mux(intr, intr_einst,0.U))
+      resultEventWire.exceptionPC := RegNext(Mux(intr, intr_mepc, 0.U))
+      resultEventWire.intrNO := RegNext(Mux(intr, intr_mcause, 0.U))
+      resultEventWire.valid := RegNext(intr)
+    }
   }
 
   for (i <- 0 until deq_width) {

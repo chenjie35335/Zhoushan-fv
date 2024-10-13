@@ -19,6 +19,8 @@ import chisel3._
 import chisel3.util._
 import chisel3.util.experimental._
 import difftest._
+import rvspeccore.checker.CheckerWithResult
+import rvspeccore.checker.ConnectCheckerResult
 
 class Core extends Module with ZhoushanConfig {
   val io = IO(new Bundle {
@@ -245,6 +247,19 @@ class Core extends Module with ZhoushanConfig {
     dt_cs.io.sscratch       := 0.U
     dt_cs.io.mideleg        := 0.U
     dt_cs.io.medeleg        := 0.U
+  }
+
+  if(EnableFormal) {
+    val XLEN = 64
+    val checker = Module(new CheckerWithResult(checkMem = true)(ZhoushanConfig.FormalConfig))
+    val skip = (cm(0).inst === Instructions.PUTCH) ||
+                    (cm(0).fu_code === s"b${Constant.FU_SYS}".U && cm(0).inst(31, 20) === Csrs.mcycle) ||
+                    cm_mmio(0)
+    checker.io.instCommit.valid := RegNext(cm(0).valid && !skip)
+    checker.io.instCommit.pc := RegNext(cm(0).pc)
+    checker.io.instCommit.inst := RegNext(cm(0).inst)
+
+    ConnectCheckerResult.setChecker(checker)(XLEN, ZhoushanConfig.FormalConfig)
   }
 
   if (EnableQueueAnalyzer) {

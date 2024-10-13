@@ -14,6 +14,7 @@
 ***************************************************************************************/
 
 package zhoushan
+import rvspeccore.core.RVConfig
 
 trait ZhoushanConfig {
   // MMIO Address Map
@@ -30,7 +31,7 @@ trait ZhoushanConfig {
   val FetchWidth = 2
   val DecodeWidth = 2
   val IssueWidth = 3
-  val CommitWidth = 2
+  val CommitWidth = 1
   // Parameters
   val InstBufferSize = 8
   val RobSize = 16
@@ -38,9 +39,17 @@ trait ZhoushanConfig {
   val MemIssueQueueSize = 8
   val PrfSize = 64
   val StoreQueueSize = 4
+  // Fomal Verification
+  val EnableFormal = true
+  val FormalConfig = RVConfig(
+    "XLEN" -> 64,
+    "extensions" -> "M",
+    "fakeExtensions" -> "A",
+    "functions" -> Seq("Privileged")
+  )
   // Settings
   val TargetOscpuSoc = false
-  val EnableDifftest = !TargetOscpuSoc
+  val EnableDifftest = !TargetOscpuSoc && !EnableFormal
   val EnableMisRateCounter = false
   val EnableQueueAnalyzer = false
   val ResetPc = if (TargetOscpuSoc) "h30000000" else "h80000000"

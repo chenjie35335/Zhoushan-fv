@@ -19,6 +19,7 @@ import chisel3._
 import chisel3.util._
 import chisel3.util.experimental._
 import difftest._
+import rvspeccore.checker.ConnectCheckerResult
 
 class Prf extends Module with ZhoushanConfig {
   val io = IO(new Bundle {
@@ -111,4 +112,12 @@ class Prf extends Module with ZhoushanConfig {
     rf_a0 := dt_ar.io.gpr(10)
   }
 
+  if(EnableFormal) {
+
+    val resultRegWire = Wire(Vec(32, UInt(64.W)))
+    for(i <- 0 until 32) {
+      resultRegWire(i) := prf(arch_rename_table(i))
+    }
+    ConnectCheckerResult.setRegSource(resultRegWire)
+  }
 }
