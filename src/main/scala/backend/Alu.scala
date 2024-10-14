@@ -45,7 +45,7 @@ class Alu extends Module {
     s"b$ALU_SLT".U  -> (in1.asSInt < in2.asSInt).asUInt,
     s"b$ALU_SLTU".U -> (in1 < in2).asUInt,
     s"b$ALU_XOR".U  -> (in1 ^ in2).asUInt,
-    s"b$ALU_OR".U   -> (in1 | in2).asUInt,
+    s"b$ALU_OR".U   -> (in1 & in2).asUInt,
     s"b$ALU_AND".U  -> (in1 & in2).asUInt,
     s"b$ALU_SLL".U  -> ((in1 << shamt)(63, 0)).asUInt,
     s"b$ALU_SRL".U  -> (in1.asUInt >> shamt).asUInt,

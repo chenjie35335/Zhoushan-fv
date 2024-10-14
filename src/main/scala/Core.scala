@@ -109,6 +109,33 @@ class Core extends Module with ZhoushanConfig {
 
   isu.io.lsu_ready := execution.io.lsu_ready
 
+  // if(EnableFormal) {
+  //   def sz2wth(size: UInt) = {
+  //       MuxLookup(size, 0.U, List(
+  //         0.U -> 8.U,
+  //         1.U -> 16.U,
+  //         2.U -> 32.U,
+  //         3.U -> 64.U
+  //       ))
+  //     }
+  //   val dmem_ld = execution.io.dmem_ld
+  //   val dmem_st = execution.io.dmem_st 
+
+  //   val mem = rvspeccore.checker.ConnectCheckerResult.makeMemSource()(64)
+  //   when(dmem_st.resp.fire) {
+  //     mem.write.valid := true.B
+  //     mem.write.addr  := SignExt32_64(dmem_st.req.bits.addr)
+  //     mem.write.data  := dmem_st.req.bits.wdata
+  //     mem.write.memWidth := sz2wth(dmem_st.req.bits.size)
+  //   }
+  //   when(dmem_ld.resp.fire) {
+  //     mem.read.valid := true.B
+  //     mem.read.addr  := SignExt32_64(dmem_ld.req.bits.addr)
+  //     mem.read.data  := dmem_ld.req.bits.wdata
+  //     mem.read.memWidth := sz2wth(dmem_ld.req.bits.size)
+  //   }
+  // }
+
   val sq = Module(new StoreQueue)
   sq.io.flush := flush
   sq.io.in_st <> execution.io.dmem_st
@@ -248,19 +275,19 @@ class Core extends Module with ZhoushanConfig {
     dt_cs.io.mideleg        := 0.U
     dt_cs.io.medeleg        := 0.U
   }
+  assert(false.B)
+  // if(EnableFormal) {
+  //   val XLEN = 64
+  //   val checker = Module(new CheckerWithResult(checkMem = true)(ZhoushanConfig.FormalConfig))
+  //   val skip = (cm(0).inst === Instructions.PUTCH) ||
+  //                   (cm(0).fu_code === s"b${Constant.FU_SYS}".U && cm(0).inst(31, 20) === Csrs.mcycle) ||
+  //                   cm_mmio(0)
+  //   checker.io.instCommit.valid := RegNext(cm(0).valid && !skip)
+  //   checker.io.instCommit.pc := RegNext(cm(0).pc)
+  //   checker.io.instCommit.inst := RegNext(cm(0).inst)
 
-  if(EnableFormal) {
-    val XLEN = 64
-    val checker = Module(new CheckerWithResult(checkMem = true)(ZhoushanConfig.FormalConfig))
-    val skip = (cm(0).inst === Instructions.PUTCH) ||
-                    (cm(0).fu_code === s"b${Constant.FU_SYS}".U && cm(0).inst(31, 20) === Csrs.mcycle) ||
-                    cm_mmio(0)
-    checker.io.instCommit.valid := RegNext(cm(0).valid && !skip)
-    checker.io.instCommit.pc := RegNext(cm(0).pc)
-    checker.io.instCommit.inst := RegNext(cm(0).inst)
-
-    ConnectCheckerResult.setChecker(checker)(XLEN, ZhoushanConfig.FormalConfig)
-  }
+  //   ConnectCheckerResult.setChecker(checker)(XLEN, ZhoushanConfig.FormalConfig)
+  // }
 
   if (EnableQueueAnalyzer) {
     val profile_queue_ib_count     = WireInit(UInt(8.W), 0.U)

@@ -189,39 +189,39 @@ class Csr extends Module {
     dt_cs.io.mideleg        := 0.U
     dt_cs.io.medeleg        := 0.U
   }
-  if(ZhoushanConfig.EnableFormal) {
-    val resultCSRWire = rvspeccore.checker.ConnectCheckerResult.makeCSRSource()(64, ZhoushanConfig.FormalConfig)
-    resultCSRWire.misa      := 0.U
-    resultCSRWire.mvendorid := 0.U
-    resultCSRWire.marchid   := 0.U
-    resultCSRWire.mimpid    := 0.U
-    resultCSRWire.mhartid   := RegNext(mhartid)
-    resultCSRWire.mstatus   := RegNext(mstatus)
-    resultCSRWire.mscratch  := RegNext(mscratch)
-    resultCSRWire.mtvec     := RegNext(mtvec)
-    resultCSRWire.mcounteren:= 0.U
-    resultCSRWire.medeleg   := 0.U
-    resultCSRWire.mideleg   := 0.U
-    resultCSRWire.mip       := 0.U
-    resultCSRWire.mie       := RegNext(mie)
-    resultCSRWire.mepc      := RegNext(mepc)
-    resultCSRWire.mcause    := RegNext(mcause)
-    resultCSRWire.mtval     := 0.U
-    resultCSRWire.scounteren:= 0.U
-    resultCSRWire.scause   := 0.U
-    resultCSRWire.stvec    := 0.U
-    resultCSRWire.sepc     := 0.U
-    resultCSRWire.stval    := 0.U
-    resultCSRWire.sscratch := 0.U
-    resultCSRWire.satp     := 0.U
-    resultCSRWire.pmpcfg0  := 0.U
-    resultCSRWire.pmpcfg1  := 0.U
-    resultCSRWire.pmpcfg2  := 0.U
-    resultCSRWire.pmpcfg3  := 0.U
-    resultCSRWire.pmpaddr0 := 0.U
-    resultCSRWire.pmpaddr1 := 0.U
-    resultCSRWire.pmpaddr2 := 0.U
-    resultCSRWire.pmpaddr3 := 0.U
-    resultCSRWire.cycle    := 0.U
-  }
+  // if(ZhoushanConfig.EnableFormal) {
+  //   val resultCSRWire = rvspeccore.checker.ConnectCheckerResult.makeCSRSource()(64, ZhoushanConfig.FormalConfig)
+  //   resultCSRWire.misa      := 0.U
+  //   resultCSRWire.mvendorid := 0.U
+  //   resultCSRWire.marchid   := 0.U
+  //   resultCSRWire.mimpid    := 0.U
+  //   resultCSRWire.mhartid   := RegNext(mhartid)
+  //   resultCSRWire.mstatus   := RegNext(mstatus)
+  //   resultCSRWire.mscratch  := RegNext(mscratch)
+  //   resultCSRWire.mtvec     := RegNext(mtvec)
+  //   resultCSRWire.mcounteren:= 0.U
+  //   resultCSRWire.medeleg   := 0.U
+  //   resultCSRWire.mideleg   := 0.U
+  //   resultCSRWire.mip       := 0.U
+  //   resultCSRWire.mie       := RegNext(mie)
+  //   resultCSRWire.mepc      := RegNext(mepc)
+  //   resultCSRWire.mcause    := RegNext(mcause)
+  //   resultCSRWire.mtval     := 0.U
+  //   resultCSRWire.scounteren:= 0.U
+  //   resultCSRWire.scause   := 0.U
+  //   resultCSRWire.stvec    := 0.U
+  //   resultCSRWire.sepc     := 0.U
+  //   resultCSRWire.stval    := 0.U
+  //   resultCSRWire.sscratch := 0.U
+  //   resultCSRWire.satp     := 0.U
+  //   resultCSRWire.pmpcfg0  := 0.U
+  //   resultCSRWire.pmpcfg1  := 0.U
+  //   resultCSRWire.pmpcfg2  := 0.U
+  //   resultCSRWire.pmpcfg3  := 0.U
+  //   resultCSRWire.pmpaddr0 := 0.U
+  //   resultCSRWire.pmpaddr1 := 0.U
+  //   resultCSRWire.pmpaddr2 := 0.U
+  //   resultCSRWire.pmpaddr3 := 0.U
+  //   resultCSRWire.cycle    := 0.U
+  // }
 }

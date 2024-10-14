@@ -112,12 +112,12 @@ class Prf extends Module with ZhoushanConfig {
     rf_a0 := dt_ar.io.gpr(10)
   }
 
-  if(EnableFormal) {
+  // if(EnableFormal) {
 
-    val resultRegWire = Wire(Vec(32, UInt(64.W)))
-    for(i <- 0 until 32) {
-      resultRegWire(i) := prf(arch_rename_table(i))
-    }
-    ConnectCheckerResult.setRegSource(resultRegWire)
-  }
+  //   val resultRegWire = Wire(Vec(32, UInt(64.W)))
+  //   for(i <- 0 until 32) {
+  //     resultRegWire(i) := prf(arch_rename_table(i))
+  //   }
+  //   ConnectCheckerResult.setRegSource(resultRegWire)
+  // }
 }
