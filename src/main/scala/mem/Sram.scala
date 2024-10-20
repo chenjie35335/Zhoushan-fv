@@ -27,7 +27,7 @@ trait SramParameters {
 }
 
 // ref: https://github.com/OSCPU/ysyxSoC
-class S011HD1P_X32Y2D128 extends Module with SramParameters {
+class S011HD1P_X32Y2D128 extends ExtModule with HasExtModuleResource with SramParameters {
   val CLK = IO(Input(Clock()))
   val CEN = IO(Input(Bool()))
   val WEN = IO(Input(Bool()))
@@ -35,21 +35,7 @@ class S011HD1P_X32Y2D128 extends Module with SramParameters {
   val D = IO(Input(UInt(SramDataWidth.W)))
   val Q = IO(Output(UInt(SramDataWidth.W)))
 
-  val ram = Mem(SramDepth,UInt(SramDataWidth.W))
-  when(!CEN && !WEN) {
-    ram(A) := D 
-  }
-
-  when(!CEN && WEN) {
-    Q := ram(A)
-  }.otherwise {
-    Q := 0.U
-  }
-  when(reset.asBool){ 
-    for(i <- 0 until SramDepth) {
-      ram(i) := 0.U
-    }
-  }
+  addResource("/vsrc/S011HD1P_X32Y2D128.v")
 }
 
 class Sram(id: Int) extends Module with SramParameters {

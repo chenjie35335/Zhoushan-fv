@@ -9,7 +9,7 @@ import mill.bsp._
 import coursier.maven.MavenRepository
 
 object ivys {
-  val sv = "2.12.13"
+  val sv = "2.12.17"
   val chisel3 = ivy"edu.berkeley.cs::chisel3:3.6.0"
   val chisel3Plugin = ivy"edu.berkeley.cs:::chisel3-plugin:3.6.0"
   val chiseltest = ivy"edu.berkeley.cs::chiseltest:0.6.0"
@@ -22,6 +22,11 @@ trait CommonModule extends ScalaModule {
   override def scalacOptions = Seq("-Xsource:2.11")
   override def compileIvyDeps = Agg(ivys.macroParadise)
   override def scalacPluginIvyDeps = Agg(ivys.macroParadise, ivys.chisel3Plugin)
+}
+
+trait CommonModuleZS extends ScalaModule {
+  override def scalaVersion = ivys.sv
+  override def scalacPluginIvyDeps = Agg(ivys.chisel3Plugin)
 }
 
 // trait HasRiscvSpecCore extends ScalaModule{
@@ -44,7 +49,7 @@ object difftest extends SbtModule with CommonModule {
   override def ivyDeps = super.ivyDeps() ++ Agg(ivys.chisel3)
 }
 
-object rvspeccore extends SbtModule with CommonModule{
+object rvspeccore extends SbtModule with CommonModuleZS{
   override def millSourcePath: Path = os.pwd / "riscv-spec-core"
   override def ivyDeps = super.ivyDeps() ++ Agg(ivys.chisel3)
 }

@@ -40,7 +40,7 @@ class Alu extends Module {
   val npc_to_rd = Wire(UInt(64.W))
 
   alu_out_0 := MuxLookup(uop.alu_code, 0.U, Array(
-    s"b$ALU_ADD".U  -> (in1 - in2).asUInt,
+    s"b$ALU_ADD".U  -> (in1 + in2).asUInt,
     s"b$ALU_SUB".U  -> (in1 - in2).asUInt,
     s"b$ALU_SLT".U  -> (in1.asSInt < in2.asSInt).asUInt,
     s"b$ALU_SLTU".U -> (in1 < in2).asUInt,
