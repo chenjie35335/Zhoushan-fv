@@ -49,7 +49,7 @@ trait ZhoushanConfig {
   )
   // Settings
   val TargetOscpuSoc = false
-  val EnableDifftest = !TargetOscpuSoc
+  val EnableDifftest = !TargetOscpuSoc & !EnableFormal
   val EnableMisRateCounter = false
   val EnableQueueAnalyzer = false
   val ResetPc = if (TargetOscpuSoc) "h30000000" else "h80000000"

@@ -127,7 +127,7 @@ class Lsu extends Module {
       when (ld_resp.fire()) {
         load_data := ld_resp.bits.rdata >> (addr_offset << 3)
         if (ZhoushanConfig.DebugLsu) {
-          printf("%d: [LOAD ] pc=%x addr=%x rdata=%x -> %x\n", DebugTimer(),
+          printf("%d: [LOAD ] pc=%x addr=%x rdata=%x -> %x rsize = %x\n", DebugTimer(),
                  uop.pc, addr, ld_resp.bits.rdata, ld_resp.bits.rdata >> (addr_offset << 3))
         }
         io.wakeup := true.B
