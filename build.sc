@@ -1,3 +1,4 @@
+import os.Path
 // import mill dependency
 import mill._
 import mill.scalalib._
@@ -23,14 +24,14 @@ trait CommonModule extends ScalaModule {
   override def scalacPluginIvyDeps = Agg(ivys.macroParadise, ivys.chisel3Plugin)
 }
 
-trait HasRiscvSpecCore extends ScalaModule{
-  override def repositoriesTask = T.task {
-    super.repositoriesTask() ++ Seq(
-      MavenRepository("https://s01.oss.sonatype.org/content/repositories/snapshots")
-    )
-  }
-  override def ivyDeps = Agg(ivy"cn.ac.ios.tis::riscvspeccore:1.1-SNAPSHOT")
-}
+// trait HasRiscvSpecCore extends ScalaModule{
+//   override def repositoriesTask = T.task {
+//     super.repositoriesTask() ++ Seq(
+//       MavenRepository("https://s01.oss.sonatype.org/content/repositories/snapshots")
+//     )
+//   }
+//   override def ivyDeps = Agg(ivy"cn.ac.ios.tis::riscvspeccore:1.1-SNAPSHOT")
+// }
 
 trait HasChiselTests extends SbtModule {
   object test extends SbtModuleTests with TestModule.ScalaTest {
@@ -43,10 +44,17 @@ object difftest extends SbtModule with CommonModule {
   override def ivyDeps = super.ivyDeps() ++ Agg(ivys.chisel3)
 }
 
-object Zhoushan extends SbtModule with CommonModule with HasRiscvSpecCore with HasChiselTests{
+object rvspeccore extends SbtModule with CommonModule{
+  override def millSourcePath: Path = os.pwd / "riscv-spec-core"
+  override def ivyDeps = super.ivyDeps() ++ Agg(ivys.chisel3)
+}
+
+
+object Zhoushan extends SbtModule with CommonModule with HasChiselTests{
   override def millSourcePath = os.pwd
   override def ivyDeps = super.ivyDeps() ++ Agg(ivys.chisel3)
   override def moduleDeps = super.moduleDeps ++ Seq(
-    difftest
+    difftest,
+    rvspeccore
   )
 }
