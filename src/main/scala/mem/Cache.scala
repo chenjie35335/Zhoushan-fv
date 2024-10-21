@@ -45,7 +45,7 @@ class Meta extends Module {
   // addr(31) is skipped in that
   //   1) only data in memory rather than MMIO could be stored in cache
   //   2) address map: memory - 0x8000_0000 ~ 0xffff_ffff
-  val tags = SyncReadMem(64, UInt(21.W))
+  val tags = SyncRegMem(64, UInt(21.W))
 
   val valid = RegInit(VecInit(Seq.fill(64)(false.B)))
 

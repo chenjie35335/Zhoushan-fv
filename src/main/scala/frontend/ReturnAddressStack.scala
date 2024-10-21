@@ -35,7 +35,8 @@ class ReturnAddressStack extends Module with BpParameters with ZhoushanConfig {
   def getFlag(x: UInt): Bool = x(RasPtrSize).asBool
 
   // we chooose ReadFirst to support "pop, then push" (rv unprivileged spec page 22)
-  val ras = SyncReadMem(RasSize, UInt(32.W), SyncReadMem.ReadFirst)
+  //val ras = SyncReadMem(RasSize, UInt(32.W), SyncReadMem.ReadFirst)
+  val ras = WriteFirstSyncRegMem(RasSize, UInt(32.W))
 
   val fp = RegInit(UInt((RasPtrSize + 1).W), 0.U)   // frame pointer (base)
   val sp = RegInit(UInt((RasPtrSize + 1).W), 0.U)   // stack pointer (top)

@@ -80,7 +80,7 @@ class BranchPredictor extends Module with BpParameters with ZhoushanConfig {
   val pred_bpc = WireInit(VecInit(Seq.fill(FetchWidth)(0.U(32.W))))
 
   // BHT definition
-  val bht = Mem(BhtSize, UInt(BhtWidth.W))
+  val bht = RegMem(BhtSize, UInt(BhtWidth.W))
   def bhtAddr(x: UInt) : UInt = x(1 + BhtAddrSize, 2)
 
   // BHT read logic
@@ -97,7 +97,7 @@ class BranchPredictor extends Module with BpParameters with ZhoushanConfig {
   // BHT reset
   when (reset.asBool) {
     for (i <- 0 until BhtSize) {
-      bht(i) := 0.U
+      bht(i.U) := 0.U
     }
   }
 

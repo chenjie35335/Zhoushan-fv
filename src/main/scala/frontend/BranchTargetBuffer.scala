@@ -45,11 +45,15 @@ abstract class AbstractBranchTargetBuffer extends Module with BpParameters with 
 
 class BranchTargetBufferDirectMapped extends AbstractBranchTargetBuffer {
 
-  val btb_tag = SyncReadMem(BtbSize, UInt(BtbTagSize.W), SyncReadMem.WriteFirst)
-  val btb_target = SyncReadMem(BtbSize, UInt(32.W), SyncReadMem.WriteFirst)
-  val btb_ras_type = SyncReadMem(BtbSize, UInt(2.W), SyncReadMem.WriteFirst)
+  //val btb_tag = SyncReadMem(BtbSize, UInt(BtbTagSize.W), SyncReadMem.WriteFirst)
+  //val btb_target = SyncReadMem(BtbSize, UInt(32.W), SyncReadMem.WriteFirst)
+  //val btb_ras_type = SyncReadMem(BtbSize, UInt(2.W), SyncReadMem.WriteFirst)
 
-  val valid = Mem(BtbSize, Bool())
+  val btb_tag = WriteFirstSyncRegMem(BtbSize, UInt(BtbTagSize.W))
+  val btb_target = WriteFirstSyncRegMem(BtbSize, UInt(32.W))
+  val btb_ras_type = WriteFirstSyncRegMem(BtbSize, UInt(2.W))
+
+  val valid = RegMem(BtbSize, Bool())
 
   for (i <- 0 until FetchWidth) {
     val rdata = WireInit(0.U.asTypeOf(new BtbEntry))
@@ -87,7 +91,7 @@ class BranchTargetBufferDirectMapped extends AbstractBranchTargetBuffer {
   // sync reset
   when (reset.asBool) {
     for (i <- 0 until BtbSize) {
-      valid(i) := false.B
+      valid(i.U) := false.B
       btb_tag.write(i.U, 0.U)
       btb_target.write(i.U, 0.U)
       btb_ras_type.write(i.U, 0.U)
@@ -102,19 +106,22 @@ class BranchTargetBuffer4WayAssociative extends AbstractBranchTargetBuffer {
 
   // 4-way associative btb
   val btb_tag = for (i <- 0 until 4) yield {
-    val btb_tag = SyncReadMem(BtbSize / 4, UInt(BtbTagSize.W), SyncReadMem.WriteFirst)
+    //val btb_tag = SyncReadMem(BtbSize / 4, UInt(BtbTagSize.W), SyncReadMem.WriteFirst)
+    val btb_tag = WriteFirstSyncRegMem(BtbSize / 4, UInt(BtbTagSize.W))
     btb_tag
   }
   val btb_target = for (i <- 0 until 4) yield {
-    val btb_target = SyncReadMem(BtbSize / 4, UInt(32.W), SyncReadMem.WriteFirst)
+    //val btb_target = SyncReadMem(BtbSize / 4, UInt(32.W), SyncReadMem.WriteFirst)
+    val btb_target = WriteFirstSyncRegMem(BtbSize / 4,UInt(32.W))
     btb_target
   }
   val btb_ras_type = for (i <- 0 until 4) yield {
-    val btb_ras_type = SyncReadMem(BtbSize / 4, UInt(2.W), SyncReadMem.WriteFirst)
+    //val btb_ras_type = SyncReadMem(BtbSize / 4, UInt(2.W), SyncReadMem.WriteFirst)
+    val btb_ras_type = WriteFirstSyncRegMem(BtbSize / 4,UInt(2.W))
     btb_ras_type
   }
   val valid = for (i <- 0 until 4) yield {
-    val valid = Mem(BtbSize / 4, Bool())
+    val valid = RegMem(BtbSize / 4, Bool())
     valid
   }
 
@@ -228,7 +235,7 @@ class BranchTargetBuffer4WayAssociative extends AbstractBranchTargetBuffer {
         btb_tag(i).write(j.U, 0.U)
         btb_target(i).write(j.U, 0.U)
         btb_ras_type(i).write(j.U, 0.U)
-        valid(i)(j) := false.B
+        valid(i)(j.U) := false.B
       }
     }
   }

@@ -33,12 +33,14 @@ abstract class AbstractPatternHistoryTable extends Module with BpParameters with
 class PatternHistoryTableLocal extends AbstractPatternHistoryTable {
 
   val pht_1 = for (j <- 0 until PhtWidth) yield {
-    val pht_1 = SyncReadMem(PhtSize, UInt(1.W), SyncReadMem.WriteFirst)
+    //val pht_1 = SyncReadMem(PhtSize, UInt(1.W), SyncReadMem.WriteFirst)
+    val pht_1 = WriteFirstSyncRegMem(PhtSize, UInt(1.W))
     pht_1
   }
 
   val pht_0 = for (j <- 0 until PhtWidth) yield {
-    val pht_0 = SyncReadMem(PhtSize, UInt(1.W), SyncReadMem.WriteFirst)
+    //val pht_0 = SyncReadMem(PhtSize, UInt(1.W), SyncReadMem.WriteFirst)
+    val pht_0 = WriteFirstSyncRegMem(PhtSize, UInt(1.W))
     pht_0
   }
 
@@ -107,8 +109,11 @@ class PatternHistoryTableLocal extends AbstractPatternHistoryTable {
 
 class PatternHistoryTableGlobal extends AbstractPatternHistoryTable {
 
-  val pht_1 = SyncReadMem(PhtSize, UInt(1.W), SyncReadMem.WriteFirst)
-  val pht_0 = SyncReadMem(PhtSize, UInt(1.W), SyncReadMem.WriteFirst)
+  //val pht_1 = SyncReadMem(PhtSize, UInt(1.W), SyncReadMem.WriteFirst)
+  //val pht_0 = SyncReadMem(PhtSize, UInt(1.W), SyncReadMem.WriteFirst)
+
+  val pht_1 = WriteFirstSyncRegMem(PhtSize,UInt(1.W))
+  val pht_0 = WriteFirstSyncRegMem(PhtSize,UInt(1.W))
 
   // read from pht
   for (i <- 0 until FetchWidth) {

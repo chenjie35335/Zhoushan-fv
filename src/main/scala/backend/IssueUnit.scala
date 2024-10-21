@@ -374,7 +374,9 @@ class IssueQueueInOrder(entries: Int, enq_width: Int, deq_width: Int) extends Ab
   def getIdx(x: UInt): UInt = x(idx_width - 1, 0)
   def getFlag(x: UInt): Bool = x(addr_width - 1).asBool
 
-  val buf = SyncReadMem(entries, new MicroOp, SyncReadMem.WriteFirst)
+  //val buf = SyncReadMem(entries, new MicroOp, SyncReadMem.WriteFirst)
+
+  val buf = WriteFirstSyncRegMem(entries, new MicroOp)
 
   val enq_vec = RegInit(VecInit((0 until enq_width).map(_.U(addr_width.W))))
   val deq_vec = RegInit(VecInit((0 until deq_width).map(_.U(addr_width.W))))

@@ -57,7 +57,8 @@ class Rob extends Module with ZhoushanConfig {
   val cm_mmio = Wire(Vec(deq_width, Bool()))
   val sq_deq_req = Wire(Bool())
 
-  val rob = SyncReadMem(entries, new MicroOp, SyncReadMem.WriteFirst)
+  //val rob = SyncReadMem(entries, new MicroOp, SyncReadMem.WriteFirst)
+  val rob = WriteFirstSyncRegMem(entries, new MicroOp)
 
   val enq_vec = RegInit(VecInit((0 until enq_width).map(_.U(addr_width.W))))
   val deq_vec = RegInit(VecInit((0 until deq_width).map(_.U(addr_width.W))))
@@ -190,10 +191,10 @@ class Rob extends Module with ZhoushanConfig {
   val intr_einst   = WireInit(UInt(64.W),0.U)
   val intr_mcause  = WireInit(UInt(64.W), 0.U)
 
-  BoringUtils.addSource(intr, "intr")
-  BoringUtils.addSource(intr_mstatus, "intr_mstatus")
-  BoringUtils.addSource(intr_mepc, "intr_mepc")
-  BoringUtils.addSource(intr_mcause, "intr_mcause")
+  // BoringUtils.addSource(intr, "intr")
+  // BoringUtils.addSource(intr_mstatus, "intr_mstatus")
+  // BoringUtils.addSource(intr_mepc, "intr_mepc")
+  // BoringUtils.addSource(intr_mcause, "intr_mcause")
 
   // interrupt
   val s_intr_idle :: s_intr_wait :: Nil = Enum(2)
@@ -241,16 +242,16 @@ class Rob extends Module with ZhoushanConfig {
         printf("%d: [DT-AE] intrNO=%x ePC=%x\n", DebugTimer(), dt_ae.io.intrNO, dt_ae.io.exceptionPC)
       }
     }
-
-    if(EnableFormal) {
-      val resultEventWire = rvspeccore.checker.ConnectCheckerResult.makeEventSource()(64, ZhoushanConfig.FormalConfig)
-      resultEventWire.cause := 0.U
-      resultEventWire.exceptionInst := RegNext(Mux(intr, intr_einst,0.U))
-      resultEventWire.exceptionPC := RegNext(Mux(intr, intr_mepc, 0.U))
-      resultEventWire.intrNO := RegNext(Mux(intr, intr_mcause, 0.U))
-      resultEventWire.valid := RegNext(intr)
-    }
   }
+
+  // if(EnableFormal) {
+  //     val resultEventWire = rvspeccore.checker.ConnectCheckerResult.makeEventSource()(64, ZhoushanConfig.FormalConfig)
+  //     resultEventWire.cause := 0.U
+  //     resultEventWire.exceptionInst := RegNext(Mux(intr, intr_einst,0.U))
+  //     resultEventWire.exceptionPC := RegNext(Mux(intr, intr_mepc, 0.U))
+  //     resultEventWire.intrNO := RegNext(Mux(intr, intr_mcause, 0.U))
+  //     resultEventWire.valid := RegNext(intr)
+  //   }
 
   for (i <- 0 until deq_width) {
     deq_idx_sync(i) := getIdx(next_deq_vec(i))
