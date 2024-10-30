@@ -43,13 +43,13 @@ trait ZhoushanConfig {
   val EnableFormal = true
   val FormalConfig = RVConfig(
     XLEN = 64,
-    extensions =  "MCZicsrZifenceiSU",
+    extensions =  "MC",
     fakeExtensions = "A",
-    functions = Seq("Privileged", "TLB")
+    functions = Seq("Privileged")
   )
   // Settings
   val TargetOscpuSoc = false
-  val EnableDifftest = !TargetOscpuSoc & !EnableFormal
+  val EnableDifftest = !TargetOscpuSoc && !EnableFormal
   val EnableMisRateCounter = false
   val EnableQueueAnalyzer = false
   val ResetPc = if (TargetOscpuSoc) "h30000000" else "h80000000"
@@ -60,7 +60,7 @@ trait ZhoushanConfig {
   val DebugRenameVerbose = false
   val DebugIntIssueQueue = false
   val DebugMemIssueQueue = false
-  val DebugCommit = true
+  val DebugCommit = false
   val DebugCommitSimple = false
   val DebugJmpPacket = false
   val DebugSram = false

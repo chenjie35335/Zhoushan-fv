@@ -113,7 +113,6 @@ class CacheBusCrossbar1to2[BT <: CacheBusIO](bus_type: BT) extends Module {
       }
     }
   }
-
   val req_0_ready = (in_flight_req(1) === 0.U)
   val req_1_ready = (in_flight_req(0) === 0.U)
 

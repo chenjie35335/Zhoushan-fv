@@ -14,12 +14,15 @@ import zhoushan.Rob
 import zhoushan.Meta
 import zhoushan.Sram
 import zhoushan.BranchPredictor
+import zhoushan.Decode
+import zhoushan.CacheBusCrossbar1to2
+import zhoushan.CacheBusIO
 
 class ZhoushanFormalSpec extends AnyFlatSpec with Formal with ChiselScalatestTester {
   behavior of "ZhoushanFormal"
   it should "pass" in {
     println("Begin Verification")
     // verify
-    verify(new Core(), Seq(BoundedCheck(12), BtormcEngineAnnotation))
+    verify(new Core(), Seq(BoundedCheck(20), BtormcEngineAnnotation))
   }
 }
