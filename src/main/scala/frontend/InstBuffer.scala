@@ -121,6 +121,7 @@ class InstBuffer extends Module with ZhoushanConfig {
 
   for (i <- 0 until deq_width) {
     val deq = buf.read(getIdx(next_deq_vec(i)))
+    //val deq = buf.read(getIdx(deq_vec(i)))
     io.out.bits.vec(i) := deq
     io.out.bits.vec(i).valid := valid_vec(i)
   }

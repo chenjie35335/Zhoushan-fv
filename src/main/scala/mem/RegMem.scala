@@ -44,38 +44,84 @@ object SyncRegMem {
   def apply[T <: Data](size: Int, t: T) = new SyncRegMem(size, t)
 }
 
-class WriteFirstSyncRegMem[T <: Data](size: Int, t: T) extends RegMem(size, t) {
-  private val writeEn = Wire(Bool())
-  private val writeIdx = Wire(UInt(log2Ceil(size).W))
-  private val writeData = Wire(t)
+// class WriteFirstSyncRegMem[T <: Data](size: Int, t: T) extends RegMem(size, t) {
+//   private val writeEn = Wire(Bool())
+//   private val writeIdx = Wire(UInt(log2Ceil(size).W))
+//   private val writeData = Wire(t)
 
-  writeEn := false.B
-  writeIdx := 0.U
-  writeData := 0.U.asTypeOf(t)
+//   writeEn := false.B
+//   writeIdx := 0.U
+//   writeData := 0.U.asTypeOf(t)
+//   // 读取逻辑
+//   override def read(idx: UInt): T = {
+//     val readData = RegNext(regs(idx))
+//     Mux(RegNext(writeEn && writeIdx === idx), RegNext(writeData), readData)
+//   }//这里存在问题，因为这里不止一个端口写，所有的端口写都要考虑的
+
+//   def read(idx: UInt, en: Bool): T = {
+//     val readData = RegEnable(regs(idx), en)
+//     Mux(RegNext(writeEn && writeIdx === idx && en), RegNext(writeData), readData)
+//   }
+
+//   // 写入逻辑
+//   override def write(idx: UInt, data: T): Unit = {
+//     writeEn := true.B
+//     writeIdx := idx
+//     writeData := data
+//     super.write(idx, data)
+//   }
+
+//   // 带掩码的写入逻辑
+//   override def write(idx: UInt, data: T, mask: Seq[Bool]): Unit = {
+//     writeEn := true.B
+//     writeIdx := idx
+//     writeData := data
+//     super.write(idx, data, mask)
+//   }
+// }
+
+// object WriteFirstSyncRegMem {
+//   def apply[T <: Data](size: Int, t: T) = new WriteFirstSyncRegMem(size, t)
+// }
+
+class WriteFirstSyncRegMem[T <: Data](size: Int, t: T) extends RegMem(size, t) {
+  private val writeEn = Wire(Vec(size, Bool()))
+  private val writeIdx = Wire(Vec(size, UInt(log2Ceil(size).W)))
+  private val writeData = Wire(Vec(size, t))
+
+  // 初始化
+  for (i <- 0 until size) {
+    writeEn(i) := false.B
+    writeIdx(i) := 0.U
+    writeData(i) := 0.U.asTypeOf(t)
+  }
+
   // 读取逻辑
   override def read(idx: UInt): T = {
     val readData = RegNext(regs(idx))
-    Mux(RegNext(writeEn && writeIdx === idx), RegNext(writeData), readData)
+    val writeEnable = writeEn.zipWithIndex.map { case (en, i) => en && writeIdx(i) === idx }.reduce(_ || _)
+    Mux(RegNext(writeEnable), RegNext(writeData(idx)), readData)
   }
 
   def read(idx: UInt, en: Bool): T = {
     val readData = RegEnable(regs(idx), en)
-    Mux(RegNext(writeEn && writeIdx === idx && en), RegNext(writeData), readData)
+    val writeEnable = writeEn.zipWithIndex.map { case (en, i) => en && writeIdx(i) === idx && en }.reduce(_ || _)
+    Mux(RegNext(writeEnable), RegNext(writeData(idx)), readData)
   }
 
   // 写入逻辑
   override def write(idx: UInt, data: T): Unit = {
-    writeEn := true.B
-    writeIdx := idx
-    writeData := data
+    writeEn(idx.asUInt) := true.B
+    writeIdx(idx.asUInt) := idx
+    writeData(idx.asUInt) := data
     super.write(idx, data)
   }
 
   // 带掩码的写入逻辑
   override def write(idx: UInt, data: T, mask: Seq[Bool]): Unit = {
-    writeEn := true.B
-    writeIdx := idx
-    writeData := data
+    writeEn(idx.asUInt) := true.B
+    writeIdx(idx.asUInt) := idx
+    writeData(idx.asUInt) := data
     super.write(idx, data, mask)
   }
 }
