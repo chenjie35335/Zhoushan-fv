@@ -27,9 +27,15 @@ class Decode extends Module with ZhoushanConfig {
     val flush = Input(Bool())
   })
 
+  //val reg_flush = RegNext(io.flush,false.B)
   // store InstPacket when out is not ready
   val reg_in = RegInit(VecInit(Seq.fill(DecodeWidth)(0.U.asTypeOf(new InstPacket))))
   val reg_in_valid = RegInit(false.B)
+  val reg_in_flush = RegInit(false.B)
+
+  when(io.flush) {
+    reg_in_flush := io.flush
+  }
 
   when (io.flush || io.out.fire()) {
     reg_in_valid := false.B
@@ -85,7 +91,7 @@ class Decoder extends Module {
   uop.pred_br := io.in.pred_br
   uop.pred_bpc := io.in.pred_bpc
 
-  val decode_result = decoder(minimizer = EspressoMinimizer,
+  val decode_result = decoder(minimizer = QMCMinimizer,
                               input = inst,
                               truthTable = DecodeConfig.decode_table)
 

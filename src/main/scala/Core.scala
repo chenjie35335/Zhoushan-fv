@@ -19,6 +19,7 @@ import chisel3._
 import chisel3.util._
 import chisel3.util.experimental._
 import difftest._
+import rvspeccore.checker._
 import rvspeccore.checker.CheckerWithResult
 import rvspeccore.checker.ConnectCheckerResult
 
@@ -43,6 +44,19 @@ class Core extends Module with ZhoushanConfig {
   val ibuf = Module(new InstBuffer)
   ibuf.io.in <> fetch.io.out
   ibuf.io.flush := flush
+
+  if(EnableFormal) {
+    val InstVec = ibuf.io.out.bits.vec.map(_.inst)
+    implicit val checker_xlen = 64
+    when(ibuf.io.out.valid) {
+      for(i <- 0 until InstVec.size){
+        assume(
+            RVI.regImm(InstVec(i)) || RVI.regReg(InstVec(i)) ||
+            RVI.control(InstVec(i))
+        )
+      }
+  }
+  }
 
   /* ----- Stage 3 - Instruction Decode (ID) ----- */
 
