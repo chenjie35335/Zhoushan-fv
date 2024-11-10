@@ -112,7 +112,7 @@ class Prf extends Module with ZhoushanConfig {
     rf_a0 := dt_ar.io.gpr(10)
   }
 
-  if(EnableFormal) {
+  if(EnableFormal && CommitWidth <= 1) {
 
     val resultRegWire = Wire(Vec(32, UInt(64.W)))
     for(i <- 0 until 32) {

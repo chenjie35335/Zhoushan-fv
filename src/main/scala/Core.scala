@@ -265,15 +265,30 @@ class Core extends Module with ZhoushanConfig {
 
   if(EnableFormal) {
     val XLEN = 64
-    val checker = Module(new CheckerWithResult(checkMem = false,enableReg = true)(ZhoushanConfig.FormalConfig))
-    // val skip = (cm(0).inst === Instructions.PUTCH) ||
-    //                 (cm(0).fu_code === s"b${Constant.FU_SYS}".U && cm(0).inst(31, 20) === Csrs.mcycle) ||
-    //                 cm_mmio(0)
-    checker.io.instCommit.valid := RegNext(cm(0).valid,false.B)
-    checker.io.instCommit.pc := RegNext(ZeroExt32_64(cm(0).pc),0.U(64.W))
-    checker.io.instCommit.inst := RegNext(cm(0).inst,0.U(64.W))
+    if(CommitWidth <= 1) {
+      val checker = Module(new CheckerWithResult(checkMem = false,enableReg = true)(ZhoushanConfig.FormalConfig))
+      // val skip = (cm(0).inst === Instructions.PUTCH) ||
+      //                 (cm(0).fu_code === s"b${Constant.FU_SYS}".U && cm(0).inst(31, 20) === Csrs.mcycle) ||
+      //                 cm_mmio(0)
+      checker.io.instCommit.valid := RegNext(cm(0).valid,false.B)
+      checker.io.instCommit.pc := RegNext(ZeroExt32_64(cm(0).pc),0.U(64.W))
+      checker.io.instCommit.inst := RegNext(cm(0).inst,0.U(64.W))
 
-    ConnectCheckerResult.setChecker(checker)(XLEN, ZhoushanConfig.FormalConfig)
+      ConnectCheckerResult.setChecker(checker)(XLEN, ZhoushanConfig.FormalConfig)
+    } else {
+      val checker = Module(new CheckerWithWB(checkMem = false, enableReg = true)(ZhoushanConfig.FormalConfig))
+      val Sel = DontCare
+      val SelPack = cm(Sel.asUInt)
+      val SelRdData = cm_rd_data(Sel.asUInt)
+
+      checker.io.instCommit.valid := RegNext(SelPack.valid,false.B)
+      checker.io.instCommit.pc := RegNext(SelPack.pc,0.U(64.W))
+      checker.io.instCommit.inst := RegNext(SelPack.inst, 0.U(32.W))
+
+      checker.io.wb.data := RegNext(SelRdData,0.U)
+      checker.io.wb.dest := RegNext(SelPack.rd_addr,0.U)
+      checker.io.wb.valid := RegNext(SelPack.rd_en,false.B)
+    }
   }
 
   // if(EnableFormal) {

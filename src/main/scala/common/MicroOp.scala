@@ -54,6 +54,8 @@ class MicroOp extends Bundle with ZhoushanConfig{
   val rd_paddr  = UInt(log2Up(PrfSize).W)   // rd prf addr
   val rd_ppaddr = UInt(log2Up(PrfSize).W)   // rd prev prf addr
 
+  val rd_data = UInt(64.W)
+
   // re-order buffer related
   val rob_addr  = UInt(log2Up(RobSize).W)
 
