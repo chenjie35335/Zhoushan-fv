@@ -130,6 +130,7 @@ class Rob extends Module with ZhoushanConfig {
     when (io.exe(i).valid) {
       complete(rob_addr) := true.B
       ecp(rob_addr) := io.exe_ecp(i)
+      rob.write(rob_addr,io.exe(i))
     }
   }
 
