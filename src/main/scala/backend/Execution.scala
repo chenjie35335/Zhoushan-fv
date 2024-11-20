@@ -128,6 +128,8 @@ class Execution extends Module with ZhoushanConfig {
     out_rd_data (0) := pipe0.io.ecp.rd_data
     // formal test used
     out_uop(0).rd_data := pipe0.io.ecp.rd_data
+    out_uop(0).rs1_data := io.rs1_data(0)
+    out_uop(0).rs2_data := io.rs2_data(0)
 
     // pipe 1
     out_uop     (1) := uop(1)
@@ -137,6 +139,8 @@ class Execution extends Module with ZhoushanConfig {
     out_rd_data (1) := pipe1.io.ecp.rd_data
 
     out_uop(1).rd_data := pipe1.io.ecp.rd_data
+    out_uop(1).rs1_data := io.rs1_data(1)
+    out_uop(1).rs2_data := io.rs2_data(1)
 
     // pipe 2
     out_uop     (2) := Mux(reg_valid, reg_uop_lsu, 0.U.asTypeOf(new MicroOp))
@@ -146,6 +150,8 @@ class Execution extends Module with ZhoushanConfig {
     out_rd_data (2) := pipe2.io.ecp.rd_data
 
     out_uop     (2).rd_data := pipe2.io.ecp.rd_data
+    out_uop     (2).rs1_data := io.rs1_data(2)
+    out_uop     (2).rs2_data := io.rs2_data(2)
   }
 
   io.out      := out_uop

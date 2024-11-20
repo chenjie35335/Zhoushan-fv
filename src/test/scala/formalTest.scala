@@ -23,6 +23,6 @@ class ZhoushanFormalSpec extends AnyFlatSpec with Formal with ChiselScalatestTes
   it should "pass" in {
     println("Begin Verification")
     // verify
-    verify(new Core(), Seq(BoundedCheck(20), BtormcEngineAnnotation))
+    verify(new Core(), Seq(BoundedCheck(22), BtormcEngineAnnotation))
   }
 }

@@ -31,7 +31,7 @@ trait ZhoushanConfig {
   val FetchWidth = 2
   val DecodeWidth = 2
   val IssueWidth = 3
-  val CommitWidth = 1
+  val CommitWidth = 2
   // Parameters
   val InstBufferSize = 8
   val RobSize = 16

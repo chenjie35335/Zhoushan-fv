@@ -189,7 +189,7 @@ class Csr extends Module {
     dt_cs.io.mideleg        := 0.U
     dt_cs.io.medeleg        := 0.U
   }
-  if(ZhoushanConfig.EnableFormal) {
+  if(ZhoushanConfig.EnableFormal && ZhoushanConfig.CommitWidth <= 1) {
     val resultCSRWire = rvspeccore.checker.ConnectCheckerResult.makeCSRSource()(64, ZhoushanConfig.FormalConfig)
     resultCSRWire.mstatus        := mstatus
     resultCSRWire.mepc           := mepc

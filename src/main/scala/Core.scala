@@ -277,17 +277,56 @@ class Core extends Module with ZhoushanConfig {
       ConnectCheckerResult.setChecker(checker)(XLEN, ZhoushanConfig.FormalConfig)
     } else {
       val checker = Module(new CheckerWithWB(checkMem = false, enableReg = true)(ZhoushanConfig.FormalConfig))
-      val Sel = DontCare
-      val SelPack = cm(Sel.asUInt)
-      val SelRdData = cm_rd_data(Sel.asUInt)
+      val sel = RegEnable(DontCare,0.U(log2Ceil(CommitWidth).W),cm(0).valid || cm(1).valid)
 
-      checker.io.instCommit.valid := RegNext(SelPack.valid,false.B)
-      checker.io.instCommit.pc := RegNext(SelPack.pc,0.U(64.W))
-      checker.io.instCommit.inst := RegNext(SelPack.inst, 0.U(32.W))
+      val SelPack = MuxCase(0.U.asTypeOf(new MicroOp), Array(
+        (sel === 0.U) -> cm(0),
+        (sel === 1.U) -> cm(1),
+      ))
+      val SelRdData = MuxCase(0.U, Array(
+        (sel === 0.U) -> cm_rd_data(0),
+        (sel === 1.U) -> cm_rd_data(1),
+      ))
+    when(sel === 0.U) {
+      checker.io.instCommit.valid := RegNext(cm(0).valid,false.B)
+      checker.io.instCommit.pc    := RegNext(cm(0).pc,0.U(XLEN.W))
+      checker.io.instCommit.inst  := RegNext(cm(0).inst, 0.U(32.W))
+      checker.io.instCommit.npc   := RegNext(cm(0).npc,0.U(XLEN.W))
 
-      checker.io.wb.data := RegNext(SelRdData,0.U)
-      checker.io.wb.dest := RegNext(SelPack.rd_addr,0.U)
-      checker.io.wb.valid := RegNext(SelPack.rd_en,false.B)
+      checker.io.wb.data := RegNext(cm_rd_data(0),0.U(XLEN.W))
+      checker.io.wb.dest := RegNext(cm(0).rd_addr,0.U(5.W))
+      checker.io.wb.valid := RegNext(cm(0).rd_en,false.B)
+      checker.io.wb.r1Addr := RegNext(cm(0).rs1_addr,0.U(5.W))
+      checker.io.wb.r2Addr := RegNext(cm(0).rs2_addr,0.U(5.W))
+      checker.io.wb.r1Data := RegNext(cm(0).rs1_data,0.U(XLEN.W))
+      checker.io.wb.r2Data := RegNext(cm(0).rs2_data,0.U(XLEN.W))
+    }.elsewhen(sel === 1.U) {
+      checker.io.instCommit.valid := RegNext(cm(1).valid,false.B)
+      checker.io.instCommit.pc    := RegNext(cm(1).pc,0.U(XLEN.W))
+      checker.io.instCommit.inst  := RegNext(cm(1).inst, 0.U(32.W))
+      checker.io.instCommit.npc   := RegNext(cm(1).npc,0.U(XLEN.W))
+
+      checker.io.wb.data := RegNext(cm_rd_data(1),0.U(XLEN.W))
+      checker.io.wb.dest := RegNext(cm(1).rd_addr,0.U(5.W))
+      checker.io.wb.valid := RegNext(cm(1).rd_en,false.B)
+      checker.io.wb.r1Addr := RegNext(cm(1).rs1_addr,0.U(5.W))
+      checker.io.wb.r2Addr := RegNext(cm(1).rs2_addr,0.U(5.W))
+      checker.io.wb.r1Data := RegNext(cm(1).rs1_data,0.U(XLEN.W))
+      checker.io.wb.r2Data := RegNext(cm(1).rs2_data,0.U(XLEN.W))
+    }.otherwise {
+      checker.io.instCommit.valid := false.B
+      checker.io.instCommit.pc    := 0.U(XLEN.W)
+      checker.io.instCommit.inst  := 0.U(32.W)
+      checker.io.instCommit.npc   := 0.U(XLEN.W)
+
+      checker.io.wb.data := 0.U(XLEN.W)
+      checker.io.wb.dest := 0.U(5.W)
+      checker.io.wb.valid := false.B
+      checker.io.wb.r1Addr := 0.U(5.W)
+      checker.io.wb.r2Addr := 0.U(5.W)
+      checker.io.wb.r1Data := 0.U(XLEN.W)
+      checker.io.wb.r2Data := 0.U(XLEN.W)
+    }
     }
   }
 

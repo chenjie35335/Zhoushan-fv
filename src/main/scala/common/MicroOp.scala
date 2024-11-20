@@ -22,6 +22,8 @@ import zhoushan.Constant._
 class MicroOp extends Bundle with ZhoushanConfig{
   val valid     = Bool()
 
+  val valid_delay=Bool()
+
   val pc        = UInt(32.W)
   val npc       = UInt(32.W)
   val inst      = UInt(32.W)
@@ -36,6 +38,10 @@ class MicroOp extends Bundle with ZhoushanConfig{
 
   val rs1_src   = UInt(RS_X.length.W)
   val rs2_src   = UInt(RS_X.length.W)
+
+  //verification
+  val rs1_data  = UInt(64.W)
+  val rs2_data  = UInt(64.W)
 
   val rs1_addr  = UInt(5.W)
   val rs2_addr  = UInt(5.W)
@@ -76,6 +82,11 @@ class MicroOp extends Bundle with ZhoushanConfig{
     }
 
     rd_en := rd_en_tmp && (rd_addr =/= 0.U)
+
+    rs1_data := 0.U
+    rs2_data := 0.U
+
+    valid_delay := false.B
 
     val imm_i = Cat(Fill(21, inst(31)), inst(30, 20))
     val imm_s = Cat(Fill(21, inst(31)), inst(30, 25), inst(11, 7))

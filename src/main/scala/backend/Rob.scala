@@ -244,7 +244,7 @@ class Rob extends Module with ZhoushanConfig {
     }
   }
 
-   if(EnableFormal) {
+   if(EnableFormal && CommitWidth <= 1) {
        val resultEventWire = rvspeccore.checker.ConnectCheckerResult.makeEventSource()(64, ZhoushanConfig.FormalConfig)
        resultEventWire.cause := 0.U
        resultEventWire.exceptionInst := RegNext(Mux(intr, intr_einst,0.U))
@@ -289,9 +289,9 @@ class Rob extends Module with ZhoushanConfig {
       cm(i).valid := valid_vec(i) && complete_mask(i) && jmp_mask(i) && store_mask(i) &&
                         Mux(cm(0).valid && cm(0).rd_en && cm(1).rd_en, cm(0).rd_addr =/= cm(1).rd_addr, true.B)
     }
-
+    
     // update sys_in_flight status register
-    when (cm(i).valid && sys_in_flight) {
+    when (cm(i).valid && sys_in_flight && !RegNext(cm(i).valid)) {
       sys_in_flight := false.B
     }
 

@@ -92,7 +92,7 @@ class Rename extends Module with ZhoushanConfig {
     out_valid := false.B
   } .otherwise {
     for (i <- 0 until DecodeWidth) {
-      out_uop(i) := Mux(uop(i).valid, uop(i), 0.U.asTypeOf(new MicroOp))
+      out_uop(i) := Mux(RegNext(uop(i).valid), RegNext(uop(i)), 0.U.asTypeOf(new MicroOp))
     }
     out_valid := io.in.valid
   }

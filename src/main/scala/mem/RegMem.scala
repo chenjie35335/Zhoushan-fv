@@ -98,7 +98,7 @@ class WriteFirstSyncRegMem[T <: Data](size: Int, t: T) extends RegMem(size, t) {
 
   // 读取逻辑
   override def read(idx: UInt): T = {
-    val readData = RegNext(regs(idx))
+    val readData = RegNext(regs(idx),0.U.asTypeOf(t))
     val writeEnable = writeEn.zipWithIndex.map { case (en, i) => en && writeIdx(i) === idx }.reduce(_ || _)
     Mux(RegNext(writeEnable), RegNext(writeData(idx)), readData)
   }
