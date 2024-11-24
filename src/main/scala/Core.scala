@@ -52,7 +52,7 @@ class Core extends Module with ZhoushanConfig {
       for(i <- 0 until InstVec.size){
         assume(
             RVI.regImm(InstVec(i)) || RVI.regReg(InstVec(i)) ||
-            RVI.control(InstVec(i))
+            RVI.control(InstVec(i)) || RVI.loadStore(InstVec(i))
         )
       }
   }
