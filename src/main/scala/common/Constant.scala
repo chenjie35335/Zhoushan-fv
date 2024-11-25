@@ -40,6 +40,8 @@ trait Constant {
   val ALU_SLL   = "1000"
   val ALU_SRL   = "1001"
   val ALU_SRA   = "1010"
+  val ALU_SUBE  = "1011"
+  val ALU_ADDE  = "1100"
 
   val JMP_X     = "????"
   val JMP_JAL   = "0001"

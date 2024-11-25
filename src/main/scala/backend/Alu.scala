@@ -42,6 +42,7 @@ class Alu extends Module {
   alu_out_0 := MuxLookup(uop.alu_code, 0.U, Array(
     s"b$ALU_ADD".U  -> (in1 + in2).asUInt,
     s"b$ALU_SUB".U  -> (in1 - in2).asUInt,
+    s"b$ALU_SUBE".U -> Cat(0.U(1.W),(in1 - in2))(62,0),
     s"b$ALU_SLT".U  -> (in1.asSInt < in2.asSInt).asUInt,
     s"b$ALU_SLTU".U -> (in1 < in2).asUInt,
     s"b$ALU_XOR".U  -> (in1 ^ in2).asUInt,
