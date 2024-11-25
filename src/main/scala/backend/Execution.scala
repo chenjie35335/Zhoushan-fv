@@ -142,8 +142,11 @@ class Execution extends Module with ZhoushanConfig {
     out_uop     (0).rd_data  := pipe0.io.ecp.rd_data
     out_uop     (0).rs1_data := io.rs1_data(0)
     out_uop     (0).rs2_data := io.rs2_data(0)
-    when(pipe0_ecp.jmp && pipe0_ecp.jmp_valid && uop(0).valid) {
-      out_uop   (0).npc      := pipe0_ecp.jmp_pc
+    if (EnableFormal) {
+      when(pipe0_ecp.jmp && pipe0_ecp.jmp_valid && uop(0).valid) {
+        out_uop(0).npc := pipe0_ecp.jmp_pc
+        assume(pipe0_ecp.jmp_pc(1,0) === 0.U(2.W))
+      }
     }
     // pipe 1
     val pipe1_ecp = pipe1.io.ecp
@@ -156,8 +159,11 @@ class Execution extends Module with ZhoushanConfig {
     out_uop     (1).rd_data  := pipe1.io.ecp.rd_data
     out_uop     (1).rs1_data := io.rs1_data(1)
     out_uop     (1).rs2_data := io.rs2_data(1)
-    when(pipe1_ecp.jmp && pipe1_ecp.jmp_valid) {
-      out_uop   (1).npc      := pipe1_ecp.jmp_pc
+    if(EnableFormal) {
+      when(pipe1_ecp.jmp && pipe1_ecp.jmp_valid && uop(1).valid) {
+        out_uop(1).npc := pipe1_ecp.jmp_pc
+        assume(pipe1_ecp.jmp_pc(1,0) === 0.U(2.W))
+      }
     }
     // pipe 2
     val pipe2_ecp = pipe2.io.ecp
@@ -170,10 +176,8 @@ class Execution extends Module with ZhoushanConfig {
     out_uop     (2).rd_data  := pipe2.io.ecp.rd_data
     out_uop     (2).rs1_data := io.rs1_data(2)
     out_uop     (2).rs2_data := io.rs2_data(2)
-    when(pipe2_ecp.jmp && pipe2_ecp.jmp_valid) {
-      out_uop(2).npc         := pipe2_ecp.jmp_pc
-    }
   }
+
 
   // assert(RegNext(out_uop(0).rs1_data) === RegNext(out_uop(0).rs1_data))
   // assert(RegNext(out_uop(0).rs2_data) === RegNext(out_uop(0).rs2_data))

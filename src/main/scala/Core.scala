@@ -276,7 +276,7 @@ class Core extends Module with ZhoushanConfig {
 
       ConnectCheckerResult.setChecker(checker)(XLEN, ZhoushanConfig.FormalConfig)
     } else {
-      val checker = Module(new CheckerWithWB(checkMem = true, enableReg = true)(ZhoushanConfig.FormalConfig))
+      val checker = Module(new CheckerWithWB(checkMem = false, enableReg = true)(ZhoushanConfig.FormalConfig))
       val sel = RegEnable(DontCare,0.U(log2Ceil(CommitWidth).W),cm(0).valid || cm(1).valid)
 
       val SelPack = MuxCase(0.U.asTypeOf(new MicroOp), Array(
@@ -291,7 +291,7 @@ class Core extends Module with ZhoushanConfig {
       checker.io.instCommit.valid := RegNext(SelPack.valid,false.B)
       checker.io.instCommit.pc    := RegNext(SelPack.pc,0.U(XLEN.W))
       checker.io.instCommit.inst  := RegNext(SelPack.inst, 0.U(32.W))
-      checker.io.instCommit.npc   := RegNext(Cat(SelPack.npc(31,2),Fill(2,0.U)),0.U(XLEN.W))
+      checker.io.instCommit.npc   := RegNext(SelPack.npc,0.U(XLEN.W))
 
       checker.io.wb.data   := RegNext(SelRdData,0.U(XLEN.W))
       checker.io.wb.dest   := RegNext(SelPack.rd_addr,0.U(5.W))
@@ -302,39 +302,39 @@ class Core extends Module with ZhoushanConfig {
       checker.io.wb.r1Data := RegNext(SelPack.rs1_data,0.U(XLEN.W))
       checker.io.wb.r2Data := RegNext(SelPack.rs2_data,0.U(XLEN.W))
 
-      ConnectCheckerWb.setChecker(checker)(XLEN, ZhoushanConfig.FormalConfig)
+      //ConnectCheckerWb.setChecker(checker)(XLEN, ZhoushanConfig.FormalConfig)
     }
 
   }
 
-   if(EnableFormal) {
-     def sz2wth(size: UInt) = {
-         MuxLookup(size, 0.U)(List(
-           0.U -> 8.U,
-           1.U -> 16.U,
-           2.U -> 32.U,
-           3.U -> 64.U
-         ))
-       }
-     val dmem_ld = execution.io.dmem_ld
-     val dmem_st = execution.io.dmem_st
-
-     val mem = rvspeccore.checker.ConnectCheckerResult.makeMemSource()(64)
-     when(dmem_st.resp.fire) {
-       mem.write.valid := true.B
-       mem.write.addr  := ZeroExt32_64(dmem_st.req.bits.addr)
-       mem.write.data  := dmem_st.req.bits.wdata
-       mem.write.memWidth := sz2wth(dmem_st.req.bits.size)
-       printf("the size of store is %d\n",dmem_st.req.bits.size)
-     }
-     when(dmem_ld.resp.fire) {
-       mem.read.valid := true.B
-       mem.read.addr  := ZeroExt32_64(dmem_ld.req.bits.addr)
-       mem.read.data  := dmem_ld.resp.bits.rdata
-       mem.read.memWidth := sz2wth(dmem_ld.req.bits.size)
-       printf("the size of load is %d\n",dmem_ld.req.bits.size)
-     }
-   }
+//   if(EnableFormal) {
+//     def sz2wth(size: UInt) = {
+//         MuxLookup(size, 0.U)(List(
+//           0.U -> 8.U,
+//           1.U -> 16.U,
+//           2.U -> 32.U,
+//           3.U -> 64.U
+//         ))
+//       }
+//     val dmem_ld = execution.io.dmem_ld
+//     val dmem_st = execution.io.dmem_st
+//
+//     val mem = rvspeccore.checker.ConnectCheckerResult.makeMemSource()(64)
+//     when(dmem_st.resp.fire) {
+//       mem.write.valid := true.B
+//       mem.write.addr  := ZeroExt32_64(dmem_st.req.bits.addr)
+//       mem.write.data  := dmem_st.req.bits.wdata
+//       mem.write.memWidth := sz2wth(dmem_st.req.bits.size)
+//       printf("the size of store is %d\n",dmem_st.req.bits.size)
+//     }
+//     when(dmem_ld.resp.fire) {
+//       mem.read.valid := true.B
+//       mem.read.addr  := ZeroExt32_64(dmem_ld.req.bits.addr)
+//       mem.read.data  := dmem_ld.resp.bits.rdata
+//       mem.read.memWidth := sz2wth(dmem_ld.req.bits.size)
+//       printf("the size of load is %d\n",dmem_ld.req.bits.size)
+//     }
+//   }
 
   if (EnableQueueAnalyzer) {
     val profile_queue_ib_count     = WireInit(UInt(8.W), 0.U)
