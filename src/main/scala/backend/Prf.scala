@@ -81,12 +81,16 @@ class Prf extends Module with ZhoushanConfig {
   when (io.flush) {
     for (i <- 0 until IssueWidth) {
       out_uop(i) := 0.U.asTypeOf(new MicroOp)
+      out_uop(i).rs1_data := 0.U
+      out_uop(i).rs2_data := 0.U
       out_rs1_data(i) := 0.U
       out_rs2_data(i) := 0.U
     }
   } .otherwise {
     for (i <- 0 until IssueWidth) {
       out_uop(i) := Mux(io.in(i).valid, io.in(i), 0.U.asTypeOf(new MicroOp))
+      out_uop(i).rs1_data := rs1_data(i)
+      out_uop(i).rs2_data := rs2_data(i)
       out_rs1_data(i) := rs1_data(i)
       out_rs2_data(i) := rs2_data(i)
     }

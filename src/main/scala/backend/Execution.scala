@@ -140,8 +140,8 @@ class Execution extends Module with ZhoushanConfig {
     out_rd_data (0) := pipe0.io.ecp.rd_data
     // formal test used
     out_uop     (0).rd_data  := pipe0.io.ecp.rd_data
-    out_uop     (0).rs1_data := io.rs1_data(0)
-    out_uop     (0).rs2_data := io.rs2_data(0)
+//    out_uop     (0).rs1_data := io.rs1_data(0)
+//    out_uop     (0).rs2_data := io.rs2_data(0)
     when(pipe0_ecp.jmp && pipe0_ecp.jmp_valid && uop(0).valid) {
       out_uop   (0).npc      := pipe0_ecp.jmp_pc
     }
@@ -154,9 +154,9 @@ class Execution extends Module with ZhoushanConfig {
     out_rd_data (1) := pipe1.io.ecp.rd_data
 
     out_uop     (1).rd_data  := pipe1.io.ecp.rd_data
-    out_uop     (1).rs1_data := io.rs1_data(1)
-    out_uop     (1).rs2_data := io.rs2_data(1)
-    when(pipe1_ecp.jmp && pipe1_ecp.jmp_valid) {
+//    out_uop     (1).rs1_data := io.rs1_data(1)
+//    out_uop     (1).rs2_data := io.rs2_data(1)
+    when(pipe1_ecp.jmp && pipe1_ecp.jmp_valid && uop(1).valid) {
       out_uop   (1).npc      := pipe1_ecp.jmp_pc
     }
     // pipe 2
@@ -168,9 +168,9 @@ class Execution extends Module with ZhoushanConfig {
     out_rd_data (2) := pipe2.io.ecp.rd_data
 
     out_uop     (2).rd_data  := pipe2.io.ecp.rd_data
-    out_uop     (2).rs1_data := io.rs1_data(2)
-    out_uop     (2).rs2_data := io.rs2_data(2)
-    when(pipe2_ecp.jmp && pipe2_ecp.jmp_valid) {
+//    out_uop     (2).rs1_data := io.rs1_data(2)
+//    out_uop     (2).rs2_data := io.rs2_data(2)
+    when(pipe2_ecp.jmp && pipe2_ecp.jmp_valid && uop(2).valid) {
       out_uop(2).npc         := pipe2_ecp.jmp_pc
     }
   }
@@ -181,9 +181,9 @@ class Execution extends Module with ZhoushanConfig {
   // assert(RegNext(out_uop(1).rs1_data) === RegNext(out_uop(1).rs1_data))
   // assert(RegNext(out_uop(1).rs2_data) === RegNext(out_uop(1).rs2_data))
   // assert(RegNext(out_uop(1).pc)       === RegNext(out_uop(1).pc))
-  // assert(RegNext(out_uop(2).rs1_data) === RegNext(out_uop(2).rs1_data))
-  // assert(RegNext(out_uop(2).rs2_data) === RegNext(out_uop(2).rs2_data))
-  // assert(RegNext(out_uop(2).pc)       === RegNext(out_uop(2).pc))
+//   assert(RegNext(out_uop(2).rs1_data) === RegNext(out_uop(2).rs1_data))
+//   assert(RegNext(out_uop(2).rs2_data) === RegNext(out_uop(2).rs2_data))
+//   assert(RegNext(out_uop(2).pc)       === RegNext(out_uop(2).pc))
   io.out      := out_uop
   io.out_ecp  := out_ecp
   io.rd_en    := out_rd_en
