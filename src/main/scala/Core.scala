@@ -302,39 +302,17 @@ class Core extends Module with ZhoushanConfig {
       checker.io.wb.r1Data := RegNext(SelPack.rs1_data,0.U(XLEN.W))
       checker.io.wb.r2Data := RegNext(SelPack.rs2_data,0.U(XLEN.W))
 
-      ConnectCheckerWb.setChecker(checker)(XLEN, ZhoushanConfig.FormalConfig)
+      checker.io.mem.get.write.valid     := RegNext(SelPack.mem_info.write.valid,false.B)
+      checker.io.mem.get.write.addr      := RegNext(ZeroExt32_64(SelPack.mem_info.write.addr),0.U)
+      checker.io.mem.get.write.data      := RegNext(SelPack.mem_info.write.data,0.U)
+      checker.io.mem.get.write.memWidth  := RegNext(SelPack.mem_info.write.memWidth,0.U)
+      checker.io.mem.get.read.valid      := RegNext(SelPack.mem_info.read.valid,false.B)
+      checker.io.mem.get.read.addr       := RegNext(ZeroExt32_64(SelPack.mem_info.read.addr),0.U)
+      checker.io.mem.get.read.data       := RegNext(SelPack.mem_info.read.data,0.U)
+      checker.io.mem.get.read.memWidth   := RegNext(SelPack.mem_info.read.memWidth,0.U)
+
     }
-
   }
-
-   if(EnableFormal) {
-     def sz2wth(size: UInt) = {
-         MuxLookup(size, 0.U)(List(
-           0.U -> 8.U,
-           1.U -> 16.U,
-           2.U -> 32.U,
-           3.U -> 64.U
-         ))
-       }
-     val dmem_ld = execution.io.dmem_ld
-     val dmem_st = execution.io.dmem_st
-
-     val mem = rvspeccore.checker.ConnectCheckerResult.makeMemSource()(64)
-     when(dmem_st.resp.fire) {
-       mem.write.valid := true.B
-       mem.write.addr  := ZeroExt32_64(dmem_st.req.bits.addr)
-       mem.write.data  := dmem_st.req.bits.wdata
-       mem.write.memWidth := sz2wth(dmem_st.req.bits.size)
-       printf("the size of store is %d\n",dmem_st.req.bits.size)
-     }
-     when(dmem_ld.resp.fire) {
-       mem.read.valid := true.B
-       mem.read.addr  := ZeroExt32_64(dmem_ld.req.bits.addr)
-       mem.read.data  := dmem_ld.resp.bits.rdata
-       mem.read.memWidth := sz2wth(dmem_ld.req.bits.size)
-       printf("the size of load is %d\n",dmem_ld.req.bits.size)
-     }
-   }
 
   if (EnableQueueAnalyzer) {
     val profile_queue_ib_count     = WireInit(UInt(8.W), 0.U)

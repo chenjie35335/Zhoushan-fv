@@ -62,6 +62,9 @@ class Lsu extends Module {
 
   val mmio = (addr(31) === 0.U)
 
+  BoringUtils.addSource(addr,"raw_mem_addr")
+  BoringUtils.addSource(uop.mem_size,"raw_mem_width")
+
   val mask = ("b11111111".U << addr_offset)(7, 0)
   val wmask = MuxLookup(uop.mem_size, 0.U, Array(
     s"b$MEM_BYTE".U  -> "b00000001".U(8.W),

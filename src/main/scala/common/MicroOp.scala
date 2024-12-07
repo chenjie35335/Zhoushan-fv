@@ -17,6 +17,7 @@ package zhoushan
 
 import chisel3._
 import chisel3.util._
+import rvspeccore.checker.ConnectCheckerWb.MemSig
 import zhoushan.Constant._
 
 class MicroOp extends Bundle with ZhoushanConfig{
@@ -39,9 +40,12 @@ class MicroOp extends Bundle with ZhoushanConfig{
   val rs1_src   = UInt(RS_X.length.W)
   val rs2_src   = UInt(RS_X.length.W)
 
-  //verification
+  //verification rs1 rs2
   val rs1_data  = UInt(64.W)
   val rs2_data  = UInt(64.W)
+
+  //verification memory
+  val mem_info = new MemSig()(64)
 
   val rs1_addr  = UInt(5.W)
   val rs2_addr  = UInt(5.W)
@@ -87,6 +91,8 @@ class MicroOp extends Bundle with ZhoushanConfig{
     rs2_data := 0.U
 
     valid_delay := false.B
+
+    mem_info := 0.U.asTypeOf(new MemSig()(64))
 
     val imm_i = Cat(Fill(21, inst(31)), inst(30, 20))
     val imm_s = Cat(Fill(21, inst(31)), inst(30, 25), inst(11, 7))
