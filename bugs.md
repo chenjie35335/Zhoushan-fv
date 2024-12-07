@@ -18,3 +18,5 @@
 （3） 还是应该将rs1Data和rs2Data写到regs然后再读感觉不需要更新太多代码，比较简单
 
 以上的所有都是保证其在一个周期内可以出结果，使得其验证可以说是瞬间出来的
+
+This is a bug found in zhoushan. The judgement of unaligned reading from and writing from memory is not fully covered.

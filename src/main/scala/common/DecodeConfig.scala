@@ -35,7 +35,7 @@ object DecodeConfig {
     JAL     -> Seq(Y, FU_JMP, ALU_X,    JMP_JAL,  MEM_X,   MEM_X,     SYS_X,      N, RS_FROM_PC,   RS_FROM_IMM, Y, IMM_J    ),
     JALR    -> Seq(Y, FU_JMP, ALU_X,    JMP_JALR, MEM_X,   MEM_X,     SYS_X,      N, RS_FROM_RF,   RS_FROM_RF,  Y, IMM_I    ),
     BEQ     -> Seq(Y, FU_JMP, ALU_X,    JMP_BEQ,  MEM_X,   MEM_X,     SYS_X,      N, RS_FROM_RF,   RS_FROM_RF,  N, IMM_B    ),
-    BNE     -> Seq(Y, FU_JMP, ALU_X,    JMP_BEQ,  MEM_X,   MEM_X,     SYS_X,      N, RS_FROM_RF,   RS_FROM_RF,  N, IMM_B    ),
+    BNE     -> Seq(Y, FU_JMP, ALU_X,    JMP_BNE,  MEM_X,   MEM_X,     SYS_X,      N, RS_FROM_RF,   RS_FROM_RF,  N, IMM_B    ),
     BLT     -> Seq(Y, FU_JMP, ALU_X,    JMP_BLT,  MEM_X,   MEM_X,     SYS_X,      N, RS_FROM_RF,   RS_FROM_RF,  N, IMM_B    ),
     BGE     -> Seq(Y, FU_JMP, ALU_X,    JMP_BGE,  MEM_X,   MEM_X,     SYS_X,      N, RS_FROM_RF,   RS_FROM_RF,  N, IMM_B    ),
     BLTU    -> Seq(Y, FU_JMP, ALU_X,    JMP_BLTU, MEM_X,   MEM_X,     SYS_X,      N, RS_FROM_RF,   RS_FROM_RF,  N, IMM_B    ),
