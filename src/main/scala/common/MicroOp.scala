@@ -47,6 +47,12 @@ class MicroOp extends Bundle with ZhoushanConfig{
   //verification memory
   val mem_info = new MemSig()(64)
 
+  //verification CSR
+  val csr_data  = UInt(32.W)
+  val csr_wdata = UInt(32.W)
+  val csr_addr  = UInt(12.W)
+  val csr_wen   = Bool()
+
   val rs1_addr  = UInt(5.W)
   val rs2_addr  = UInt(5.W)
   val rd_addr   = UInt(5.W)
@@ -93,6 +99,8 @@ class MicroOp extends Bundle with ZhoushanConfig{
     valid_delay := false.B
 
     mem_info := 0.U.asTypeOf(new MemSig()(64))
+
+    csr_data := 0.U
 
     val imm_i = Cat(Fill(21, inst(31)), inst(30, 20))
     val imm_s = Cat(Fill(21, inst(31)), inst(30, 25), inst(11, 7))

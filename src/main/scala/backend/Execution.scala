@@ -165,6 +165,12 @@ class Execution extends Module with ZhoushanConfig {
     out_rd_data (2) := pipe2.io.ecp.rd_data
 
     out_uop     (2).rd_data  := pipe2.io.ecp.rd_data
+
+    BoringUtils.addSink(out_uop     (2).csr_data , "csr_fv_data ")
+    BoringUtils.addSink(out_uop     (2).csr_addr , "csr_fv_addr ")
+    BoringUtils.addSink(out_uop     (2).csr_wdata, "csr_fv_wdata")
+    BoringUtils.addSink(out_uop     (2).csr_wen  , "csr_fv_wr   ")
+
     // mem_info connection
     val raw_mem_addr  = WireInit(UInt(32.W),0.U)
     val raw_mem_width = WireInit(UInt(2.W),0.U)

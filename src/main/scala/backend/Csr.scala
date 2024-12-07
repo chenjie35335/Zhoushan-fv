@@ -85,7 +85,6 @@ class Csr extends Module {
     val mstatus_new = Cat(mstatus_sd, mstatus(62, 0))
     mstatus_new
   }
-
   // ECALL
   when (sys_code === s"b$SYS_ECALL".U) {
     mepc := uop.pc
@@ -112,6 +111,8 @@ class Csr extends Module {
   BoringUtils.addSink(intr_mstatus, "intr_mstatus")
   BoringUtils.addSink(intr_mepc, "intr_mepc")
   BoringUtils.addSink(intr_mcause, "intr_mcause")
+
+  //verification signals
 
   when (intr) {
     mstatus := intr_mstatus
@@ -163,6 +164,34 @@ class Csr extends Module {
                     (uop.pred_br && (csr_jmp_pc =/= uop.pred_bpc)) || !uop.pred_br,
                     uop.pred_br)
   io.ecp.rd_data := rdata
+
+  //verification
+  if(ZhoushanConfig.EnableFormal) {
+    val csr_vmap = Map( //mip寄存器比较麻烦，目前这里被认为是只读的，所以我不想管他
+      //其他的两个对于验证来说没有意义，因此不予考虑
+      MaskedRegMap(Csrs.mhartid, mhartid),
+      MaskedRegMap(Csrs.mstatus, mstatus, "hffffffffffffffff".U, mstatusWriteFunction),
+      MaskedRegMap(Csrs.mie, mie),
+      MaskedRegMap(Csrs.mtvec, mtvec),
+      MaskedRegMap(Csrs.mscratch, mscratch),
+      MaskedRegMap(Csrs.mepc, mepc),
+      MaskedRegMap(Csrs.mcause, mcause)
+    )
+    // assume the exist register
+    when(csr_rw) {
+      assume(MaskedRegMap.exists(csr_vmap, addr))
+    }
+    //
+    val csr_data = WireInit(0.U(32.W))
+    val csr_ndata = WireInit(0.U(32.W))
+    MaskedRegMap.rawData(csr_vmap, addr, csr_data,csr_ndata,wen)
+
+    // 添加飞线
+    BoringUtils.addSource(addr, "csr_fv_addr")
+    BoringUtils.addSource(csr_rw, "csr_fv_wr")
+    BoringUtils.addSource(csr_data, "csr_fv_data")
+    BoringUtils.addSource(csr_ndata, "csr_fv_wdata")
+  }
 
   // difftest for CSR state
 

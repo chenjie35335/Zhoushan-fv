@@ -52,7 +52,8 @@ class Core extends Module with ZhoushanConfig {
       for(i <- 0 until InstVec.size){
         assume(
             RVI.regImm(InstVec(i)) || RVI.regReg(InstVec(i)) ||
-            RVI.control(InstVec(i)) || RVI.loadStore(InstVec(i))
+            RVI.control(InstVec(i)) || RVI.loadStore(InstVec(i)) ||
+              RVZicsr.reg(InstVec(i)) || RVZicsr.imm(InstVec(i))
         )
       }
   }
@@ -301,6 +302,11 @@ class Core extends Module with ZhoushanConfig {
       checker.io.wb.r2Addr := RegNext(SelPack.rs2_addr,0.U(5.W))
       checker.io.wb.r1Data := RegNext(SelPack.rs1_data,0.U(XLEN.W))
       checker.io.wb.r2Data := RegNext(SelPack.rs2_data,0.U(XLEN.W))
+      checker.io.wb.csrAddr:= RegNext(SelPack.csr_addr,0.U)
+      checker.io.wb.csrWr  := RegNext(SelPack.csr_wen,false.B)
+      checker.io.wb.csrNdata := RegNext(SelPack.csr_wdata,0.U)
+      checker.io.wb.csrData := RegNext(SelPack.csr_data,0.U)
+
 
       checker.io.mem.get.write.valid     := RegNext(SelPack.mem_info.write.valid,false.B)
       checker.io.mem.get.write.addr      := RegNext(ZeroExt32_64(SelPack.mem_info.write.addr),0.U)
