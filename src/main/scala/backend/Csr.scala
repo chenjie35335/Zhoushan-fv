@@ -34,6 +34,16 @@ object Csrs {
   val minstret = "hb02".U
 }
 
+class Csrs_Data extends Bundle{
+  val mhartid   = UInt(64.W)
+  val mstatus   = UInt(64.W)
+  val mie       = UInt(64.W)
+  val mtvec     = UInt(64.W)
+  val mscratch  = UInt(64.W)
+  val mepc      = UInt(64.W)
+  val mcause    = UInt(64.W)
+}
+
 class Csr extends Module {
   val io = IO(new Bundle {
     val uop = Input(new MicroOp())
@@ -60,6 +70,14 @@ class Csr extends Module {
   val mscratch  = RegInit(UInt(64.W), 0.U)
   val mepc      = RegInit(UInt(64.W), 0.U)
   val mcause    = RegInit(UInt(64.W), 0.U)
+
+  BoringUtils.addSource(mhartid , "csr_fv_mhartid")
+  BoringUtils.addSource(mstatus , "csr_fv_mstatus")
+  BoringUtils.addSource(mie     , "csr_fv_mie")
+  BoringUtils.addSource(mtvec   , "csr_fv_mtvec")
+  BoringUtils.addSource(mscratch, "csr_fv_mscratch")
+  BoringUtils.addSource(mepc    , "csr_fv_mepc")
+  BoringUtils.addSource(mcause  , "csr_fv_mcause")
 
   BoringUtils.addSource(mstatus, "csr_mstatus")
   BoringUtils.addSource(mie(7).asBool, "csr_mie_mtie")
@@ -169,7 +187,7 @@ class Csr extends Module {
   if(ZhoushanConfig.EnableFormal) {
     val csr_vmap = Map( //mip寄存器比较麻烦，目前这里被认为是只读的，所以我不想管他
       //其他的两个对于验证来说没有意义，因此不予考虑
-      MaskedRegMap(Csrs.mhartid, mhartid),
+      //MaskedRegMap(Csrs.mhartid, mhartid),
       MaskedRegMap(Csrs.mstatus, mstatus, "hffffffffffffffff".U, mstatusWriteFunction),
       MaskedRegMap(Csrs.mie, mie),
       MaskedRegMap(Csrs.mtvec, mtvec),
@@ -182,14 +200,12 @@ class Csr extends Module {
       assume(MaskedRegMap.exists(csr_vmap, addr))
     }
     //
-    val csr_data = WireInit(0.U(32.W))
     val csr_ndata = WireInit(0.U(32.W))
-    MaskedRegMap.rawData(csr_vmap, addr, csr_data,csr_ndata,wen)
+    MaskedRegMap.rawData(csr_vmap, addr, wdata , csr_ndata, wen)
 
     // 添加飞线
     BoringUtils.addSource(addr, "csr_fv_addr")
     BoringUtils.addSource(csr_rw, "csr_fv_wr")
-    BoringUtils.addSource(csr_data, "csr_fv_data")
     BoringUtils.addSource(csr_ndata, "csr_fv_wdata")
   }
 

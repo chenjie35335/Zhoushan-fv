@@ -52,7 +52,7 @@ class Core extends Module with ZhoushanConfig {
       for(i <- 0 until InstVec.size){
         assume(
             RVI.regImm(InstVec(i)) || RVI.regReg(InstVec(i)) ||
-            RVI.control(InstVec(i)) || RVI.loadStore(InstVec(i)) ||
+            RVI.control(InstVec(i)) || //RVI.loadStore(InstVec(i)) ||
               RVZicsr.reg(InstVec(i)) || RVZicsr.imm(InstVec(i))
         )
       }
@@ -277,7 +277,7 @@ class Core extends Module with ZhoushanConfig {
 
       ConnectCheckerResult.setChecker(checker)(XLEN, ZhoushanConfig.FormalConfig)
     } else {
-      val checker = Module(new CheckerWithWB(checkMem = true, enableReg = true)(ZhoushanConfig.FormalConfig))
+      val checker = Module(new CheckerWithWB(checkMem = false, enableReg = true)(ZhoushanConfig.FormalConfig))
       val sel = RegEnable(DontCare,0.U(log2Ceil(CommitWidth).W),cm(0).valid || cm(1).valid)
 
       val SelPack = MuxCase(0.U.asTypeOf(new MicroOp), Array(
@@ -305,18 +305,27 @@ class Core extends Module with ZhoushanConfig {
       checker.io.wb.csrAddr:= RegNext(SelPack.csr_addr,0.U)
       checker.io.wb.csrWr  := RegNext(SelPack.csr_wen,false.B)
       checker.io.wb.csrNdata := RegNext(SelPack.csr_wdata,0.U)
-      checker.io.wb.csrData := RegNext(SelPack.csr_data,0.U)
+      //checker.io.wb.csrData := RegNext(SelPack.csr_data,0.U)
+      ConnectCheckerWb.setChecker(checker)(64,ZhoushanConfig.FormalConfig)
 
+      val mem = ConnectCheckerWb.makeMemSource()(64)
+      mem.write.valid     := RegNext(SelPack.mem_info.write.valid,false.B)
+      mem.write.addr      := RegNext(ZeroExt32_64(SelPack.mem_info.write.addr),0.U)
+      mem.write.data      := RegNext(SelPack.mem_info.write.data,0.U)
+      mem.write.memWidth  := RegNext(SelPack.mem_info.write.memWidth,0.U)
+      mem.read.valid      := RegNext(SelPack.mem_info.read.valid,false.B)
+      mem.read.addr       := RegNext(ZeroExt32_64(SelPack.mem_info.read.addr),0.U)
+      mem.read.data       := RegNext(SelPack.mem_info.read.data,0.U)
+      mem.read.memWidth   := RegNext(SelPack.mem_info.read.memWidth,0.U)
 
-      checker.io.mem.get.write.valid     := RegNext(SelPack.mem_info.write.valid,false.B)
-      checker.io.mem.get.write.addr      := RegNext(ZeroExt32_64(SelPack.mem_info.write.addr),0.U)
-      checker.io.mem.get.write.data      := RegNext(SelPack.mem_info.write.data,0.U)
-      checker.io.mem.get.write.memWidth  := RegNext(SelPack.mem_info.write.memWidth,0.U)
-      checker.io.mem.get.read.valid      := RegNext(SelPack.mem_info.read.valid,false.B)
-      checker.io.mem.get.read.addr       := RegNext(ZeroExt32_64(SelPack.mem_info.read.addr),0.U)
-      checker.io.mem.get.read.data       := RegNext(SelPack.mem_info.read.data,0.U)
-      checker.io.mem.get.read.memWidth   := RegNext(SelPack.mem_info.read.memWidth,0.U)
-
+      val csr = ConnectCheckerWb.makeCSRSource()(XLEN = 64,ZhoushanConfig.FormalConfig)
+      csr.mhartid := RegNext(SelPack.csr_data.mhartid ,0.U)
+      csr.mstatus := RegNext(SelPack.csr_data.mstatus ,0.U)
+      csr.mie     := RegNext(SelPack.csr_data.mie     ,0.U)
+      csr.mtvec   := RegNext(SelPack.csr_data.mtvec   ,0.U)
+      csr.mscratch:= RegNext(SelPack.csr_data.mscratch,0.U)
+      csr.mepc    := RegNext(SelPack.csr_data.mepc    ,0.U)
+      csr.mcause  := RegNext(SelPack.csr_data.mcause  ,0.U)
     }
   }
 

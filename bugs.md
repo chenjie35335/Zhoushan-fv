@@ -26,3 +26,5 @@ This is a bug found in zhoushan. The judgement of unaligned reading from and wri
 1、 写CSR寄存器地址，写CSR寄存器的值
 2、 写通用寄存器地址，写通用寄存器值
 我的想法还是提取寄存器的更新值，比较更新值
+
+参考模型是这样，就是说如果rs1是0,则不考虑读写，这部分还是需要考虑和商榷的

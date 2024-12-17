@@ -43,7 +43,7 @@ trait ZhoushanConfig {
   val EnableFormal = true
   val FormalConfig = RVConfig(
     XLEN = 64,
-    extensions =  "MC",
+    extensions =  "MCZicsr",
     fakeExtensions = "A",
     functions = Seq("Privileged")
   )

@@ -73,6 +73,9 @@ class Lsu extends Module {
     s"b$MEM_DWORD".U -> "b11111111".U(8.W)
   ))
 
+//  when(is_mem) {
+//    assume(uop.mem_size === s"b$MEM_WORD".U)
+//  }
   // memory address unaligned
   //    half  -> offset = 111
   //    word  -> offset = 101/110/111

@@ -143,6 +143,39 @@ class Execution extends Module with ZhoushanConfig {
       out_uop   (0).npc      := pipe0_ecp.jmp_pc
       assume(pipe0_ecp.jmp_pc(1,0) === 0.U)
     }
+    val csr_fv_wdata = WireInit(0.U(32.W))
+    val csr_fv_addr = WireInit(0.U(12.W))
+    val csr_fv_wr = WireInit(false.B)
+
+    BoringUtils.addSink(out_uop(0).csr_addr, "csr_fv_addr")
+    BoringUtils.addSink(out_uop(0).csr_wdata, "csr_fv_wdata")
+    BoringUtils.addSink(out_uop(0).csr_wen, "csr_fv_wr")
+
+    val csr_fv_mhartid    = WireInit(0.U(64.W))
+    val csr_fv_mstatus    = WireInit(0.U(64.W))
+    val csr_fv_mie        = WireInit(0.U(64.W))
+    val csr_fv_mtvec      = WireInit(0.U(64.W))
+    val csr_fv_mscratch   = WireInit(0.U(64.W))
+    val csr_fv_mepc       = WireInit(0.U(64.W))
+    val csr_fv_mcause     = WireInit(0.U(64.W))
+    BoringUtils.addSink(csr_fv_mhartid , "csr_fv_mhartid")
+    BoringUtils.addSink(csr_fv_mstatus , "csr_fv_mstatus")
+    BoringUtils.addSink(csr_fv_mie     , "csr_fv_mie")
+    BoringUtils.addSink(csr_fv_mtvec   , "csr_fv_mtvec")
+    BoringUtils.addSink(csr_fv_mscratch, "csr_fv_mscratch")
+    BoringUtils.addSink(csr_fv_mepc    , "csr_fv_mepc")
+    BoringUtils.addSink(csr_fv_mcause  , "csr_fv_mcause")
+    out_uop(0).csr_data.mhartid     :=  csr_fv_mhartid
+    out_uop(0).csr_data.mstatus     :=  csr_fv_mstatus
+    out_uop(0).csr_data.mie         :=  csr_fv_mie
+    out_uop(0).csr_data.mtvec       :=  csr_fv_mtvec
+    out_uop(0).csr_data.mscratch    :=  csr_fv_mscratch
+    out_uop(0).csr_data.mepc        :=  csr_fv_mepc
+    out_uop(0).csr_data.mcause      :=  csr_fv_mcause
+
+    out_uop(0).csr_addr := csr_fv_addr
+    out_uop(0).csr_wdata := csr_fv_wdata
+    out_uop(0).csr_wen := csr_fv_wr
     // pipe 1
     val pipe1_ecp = pipe1.io.ecp
     out_uop     (1) := uop(1)
@@ -165,11 +198,6 @@ class Execution extends Module with ZhoushanConfig {
     out_rd_data (2) := pipe2.io.ecp.rd_data
 
     out_uop     (2).rd_data  := pipe2.io.ecp.rd_data
-
-    BoringUtils.addSink(out_uop     (2).csr_data , "csr_fv_data ")
-    BoringUtils.addSink(out_uop     (2).csr_addr , "csr_fv_addr ")
-    BoringUtils.addSink(out_uop     (2).csr_wdata, "csr_fv_wdata")
-    BoringUtils.addSink(out_uop     (2).csr_wen  , "csr_fv_wr   ")
 
     // mem_info connection
     val raw_mem_addr  = WireInit(UInt(32.W),0.U)

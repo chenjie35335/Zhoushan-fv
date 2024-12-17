@@ -66,24 +66,18 @@ object MaskedRegMap {
   }
 
   def exists(mapping: Map[UInt, (UInt, UInt, UInt => UInt, UInt)], addr: UInt): Bool = {
-    val IsExist = false.B
-    mapping.map { case (a, (r, wm, wfn, rm)) => {
-      when(addr === a) {
-        IsExist := true.B
-      }
-      }
+    var result = false.B
+    for (a <- mapping.keys) {
+      result = result || (addr === a)
     }
-    IsExist
+    result
   }
 
-  def rawData(mapping: Map[UInt, (UInt, UInt, UInt => UInt, UInt)], addr: UInt, rdata: UInt, wdata:  UInt, wen: Bool): Unit = {
+  def rawData(mapping: Map[UInt, (UInt, UInt, UInt => UInt, UInt)], addr: UInt, wdata: UInt, ndata:  UInt, wen: Bool): Unit = {
     mapping.map { case (a, (r, wm, wfn, rm)) => {
-      when(addr === a) {
-        rdata := r
-      }
       if (wfn != null) {
         when(addr === a && wen) {
-          wdata := wfn(MaskData(r, wdata, wm))
+          ndata := wfn(MaskData(r, wdata, wm))
         }
       }
     }
