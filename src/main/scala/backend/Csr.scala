@@ -198,6 +198,7 @@ class Csr extends Module {
     // assume the exist register
     when(csr_rw) {
       assume(MaskedRegMap.exists(csr_vmap, addr))
+      assume(uop.rs1_addr =/= 0.U)
     }
     //
     val csr_ndata = WireInit(0.U(32.W))

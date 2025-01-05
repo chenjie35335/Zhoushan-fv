@@ -318,7 +318,7 @@ class Core extends Module with ZhoushanConfig {
       mem.read.data       := RegNext(SelPack.mem_info.read.data,0.U)
       mem.read.memWidth   := RegNext(SelPack.mem_info.read.memWidth,0.U)
 
-      val csr = ConnectCheckerWb.makeCSRSource()(XLEN = 64,ZhoushanConfig.FormalConfig)
+      val csr = ConnectCheckerWb.makeCSRSource()(64,ZhoushanConfig.FormalConfig)
       csr.mhartid := RegNext(SelPack.csr_data.mhartid ,0.U)
       csr.mstatus := RegNext(SelPack.csr_data.mstatus ,0.U)
       csr.mie     := RegNext(SelPack.csr_data.mie     ,0.U)
